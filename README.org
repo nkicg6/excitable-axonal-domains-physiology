@@ -1,0 +1,5 @@
+Analysis for thesis project. 
+
+* LFP
+
+- analysis routines for LFP extracellular recording analysis.
