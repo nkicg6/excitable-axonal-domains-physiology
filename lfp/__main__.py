@@ -2,6 +2,7 @@
 from args import parser
 import parsing
 
+
 def io_fn(datadir):
     print("io function passed")
     csv_path = parsing.get_csv(datadir)
@@ -20,6 +21,7 @@ def main():
         print(f"merged metadata is \n {merged_meta}")
     else:
         print(f"ERROR! did not understand options in {cmd_line.analysis_type}")
+
 
 if __name__ == "__main__":
     main()

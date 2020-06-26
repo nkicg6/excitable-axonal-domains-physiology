@@ -59,11 +59,13 @@ def _IO_return_data(flist: list) -> list:
 def _jsonlist_to_dict(jsonlist: list) -> dict:
     return {item["short_filename"]: item for item in jsonlist}
 
+
 def get_csv(path: str):
     for p in os.listdir(path):
         if p.endswith(".csv"):
             return os.path.join(path, p)
     return None
+
 
 def IO_parse_json_main(path: str, endswith: str) -> dict:
     jfiles = _IO_get_json_data(path, endswith)

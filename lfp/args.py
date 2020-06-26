@@ -8,7 +8,7 @@ parser.add_argument(
     "-d",
     "--data-directory",
     dest="data_directory",
-    required = True,
+    required=True,
     help="Directory with data and metadata files",
 )
 parser.add_argument(
@@ -18,6 +18,7 @@ parser.add_argument(
     required=True,
     help="type of analyis to run. Currently supported options include: 'io' ",
 )
+
 
 def validate_args(parser):
 

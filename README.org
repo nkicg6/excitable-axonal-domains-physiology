@@ -5,3 +5,6 @@ Analysis for thesis project.
 - analysis routines for LFP extracellular recording analysis.
 ** script design
 Parsing will be performed first, we will pass the path to a data directory to a main file, 
+** In-progress add IO file organization
+** TODO write analysis which will save images of each experiment
+** TODO save data from each good experiment?
