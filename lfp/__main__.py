@@ -1,6 +1,7 @@
 # main for extracellular LFP analysis
 from args import parser
 import parsing
+import lfpio
 
 
 def input_output(datadir):
@@ -18,7 +19,11 @@ def main():
     # first, validate command line opts
     if cmd_line.analysis_type == "io":
         merged_meta, io_analysis_datastructure = input_output(cmd_line.data_directory)
-        print(f"analysis datastructure is \n {io_analysis_datastructure}")
+        all_res = []
+        for uniquekey in io_analysis_datastructure.keys():
+            temp = io_analysis_datastructure[uniquekey]["io"]
+            all_res.append(lfpio.input_output_experiment(temp))
+        print(f"all res {all_res}")
     else:
         print(f"ERROR! did not understand options in {cmd_line.analysis_type}")
 
