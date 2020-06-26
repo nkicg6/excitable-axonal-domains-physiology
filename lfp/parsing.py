@@ -2,8 +2,9 @@
 IO analysis
 -----------
 json_data = IO_parse_json_main('path/to/datadir')
-csv_data = IO_parse_csv_main('path/to/csv/data.csv')
+csv_data = IO_parse_csv_main('path/to/datadir', 'io')
 merged = merge_csv_json(csv_data, json_data)
+datastructure = make_io_analysis_datastructure(merged)
 """
 
 import csv
