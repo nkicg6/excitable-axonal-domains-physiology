@@ -102,12 +102,26 @@ def _make_keys_iodict(datadict: dict) -> dict:
 
 def make_io_analysis_datastructure(datadict: dict) -> dict:
     iodict = _make_keys_iodict(datadict)
+    _get_key = lambda uniqueid: datadict[k][uniqueid]
     for k in datadict.keys():
-        fname = datadict[k]["full_path"]
-        io = float(datadict[k]["stim"])
-        uid = datadict[k]["uniqueid"]
+        fname = _get_key("full_path")
+        io = float(_get_key("stim"))
+        uid = _get_key("uniqueid")
+        start_ind = _get_key("start_ind")
+        stop_ind = _get_key("stop_ind")
+        use_opt = _get_key("use_opt")
+        peak_direction = _get_key("peak_direction")
         iodict[uid]["metadata"].append(datadict[k])
-        iodict[uid]["io"].append((io, fname))
+        iodict[uid]["io"].append(
+            {
+                "stim": io,
+                "file": fname,
+                "start_ind": start_ind,
+                "stop_ind": stop_ind,
+                "use_opt": use_opt,
+                "peak_direction": peak_direction,
+            }
+        )
     for k in iodict.keys():
-        iodict[k]["io"].sort(key=lambda tup: tup[0])  # sort in place
+        iodict[k]["io"].sort(key=lambda iod: iod["stim"])  # sort in place
     return iodict
