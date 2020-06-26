@@ -89,3 +89,23 @@ def IO_parse_csv_main(path: str, protocol: str) -> dict:
     filtered = _filter_protocol(early_parse, protocol)
     with_id = _add_unique_id(filtered)
     return with_id
+
+
+def _make_keys_iodict(datadict: dict) -> dict:
+    unique = set()
+    for k in datadict.keys():
+        unique.add(datadict[k]["uniqueid"])
+    return {i: {"metadata": [], "io": []} for i in unique}
+
+
+def make_io_analysis_datastructure(datadict: dict) -> dict:
+    iodict = _make_keys_iodict(datadict)
+    for k in datadict.keys():
+        fname = datadict[k]["full_path"]
+        io = float(datadict[k]["stim"])
+        uid = datadict[k]["uniqueid"]
+        iodict[uid]["metadata"].append(datadict[k])
+        iodict[uid]["io"].append((io, fname))
+    for k in iodict.keys():
+        iodict[k]["io"].sort(key=lambda tup: tup[0])  # sort in place
+    return iodict
