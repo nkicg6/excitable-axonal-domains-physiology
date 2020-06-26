@@ -60,7 +60,7 @@ def _jsonlist_to_dict(jsonlist: list) -> dict:
     return {item["short_filename"]: item for item in jsonlist}
 
 
-def get_csv(path: str):
+def _IO_get_csv(path: str):
     for p in os.listdir(path):
         if p.endswith(".csv"):
             return os.path.join(path, p)
@@ -85,7 +85,8 @@ def merge_csv_json(csv_dict: dict, json_data: dict) -> dict:
 
 
 def IO_parse_csv_main(path: str, protocol: str) -> dict:
-    early_parse = _IO_parse_csv(path)
+    target_csv = _IO_get_csv(path)
+    early_parse = _IO_parse_csv(target_csv)
     filtered = _filter_protocol(early_parse, protocol)
     with_id = _add_unique_id(filtered)
     return with_id

@@ -5,8 +5,7 @@ import parsing
 
 def input_output(datadir):
     print("io function passed")
-    csv_path = parsing.get_csv(datadir)
-    csv_data = parsing.IO_parse_csv_main(csv_path, "io")
+    csv_data = parsing.IO_parse_csv_main(datadir, "io")
     json_data = parsing.IO_parse_json_main(datadir, "_io_region.json")
     merged = parsing.merge_csv_json(csv_data, json_data)
     io_analysis_datastructure = parsing.make_io_analysis_datastructure(merged)
