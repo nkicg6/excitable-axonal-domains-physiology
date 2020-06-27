@@ -1,4 +1,6 @@
+import os
 import pyabf
+import matplotlib.pyplot as plt
 import numpy as np
 import scipy.signal as s
 
@@ -34,7 +36,7 @@ def _find_peak(x_subset, y_subset, peak_direction):
     if len(peak_ind) != 1:
         peak_y = np.array([])
         peak_x = np.array([])
-        print(f"No or multiple peaks found, peaks = {peak_ind}")
+        # print(f"No or multiple peaks found, peaks = {peak_ind}")
     else:
         peak_y = y_subset[peak_ind]
         peak_x = x_subset[peak_ind]
@@ -81,4 +83,61 @@ def input_output_experiment(io_list: list) -> list:
     for io_entry in io_list:
         temp_result = _input_output_single_entry(io_entry)
         result.append(temp_result)
+    return result
+
+
+def _make_io_img_path(basepath, title):
+    p = os.path.join(basepath, title)
+    p = p + "_io_experiment.png"
+    return p
+
+
+def input_output_experiment_plot(result_input_output_experiment: list, title: str):
+    fig = plt.figure(figsize=(10, 8))
+    ax1 = fig.add_subplot(121)
+    ax2 = fig.add_subplot(122)
+    ax1.set_title(title)
+    for experiment in result_input_output_experiment:
+        basepath, id_title = os.path.split(experiment["file"])
+        peakind = experiment["peak_results_dict"]["peak_subset_index"]
+        ax1.plot(experiment["subset_x"], experiment["subset_y"])
+        ax1.plot(
+            experiment["subset_x"][peakind],
+            experiment["subset_y"][peakind],
+            marker="*",
+            markersize=15,
+        )
+        ax2.plot(
+            experiment["stim"],
+            experiment["amplitude"],
+            marker=".",
+            markersize=15,
+            label=id_title,
+        )
+    savepath = _make_io_img_path(basepath, title)
+    ax2.legend()
+    fig.savefig(savepath)
+    print(f"saving to {savepath}")
+
+
+def _np_array_to_float_or_list(d):
+    result = {}
+    for k in d.keys():
+        if isinstance(d[k], np.ndarray):
+            result[k] = d[k].tolist()
+        else:
+            result[k] = d[k]
+    return result
+
+
+def gather_io_data_to_json(data):
+    result = []
+    for io_entry in data:
+        exp_data = io_entry.copy()
+        peak_results = exp_data.pop("peak_results_dict").copy()
+        peak_dict = peak_results.pop("peak_dict")
+        exp_data.pop("subset_x")
+        exp_data.pop("subset_y")
+        res = {**peak_results, **exp_data, **peak_dict}
+        result.append(_np_array_to_float_or_list(res))
     return result

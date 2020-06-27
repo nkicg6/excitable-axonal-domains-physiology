@@ -1,5 +1,7 @@
 # main for extracellular LFP analysis
 from args import parser
+import os
+import json
 import parsing
 import lfpio
 
@@ -22,8 +24,19 @@ def main():
         all_res = []
         for uniquekey in io_analysis_datastructure.keys():
             temp = io_analysis_datastructure[uniquekey]["io"]
-            all_res.append(lfpio.input_output_experiment(temp))
-        print(f"all res {all_res}")
+            exp_temp_res = lfpio.input_output_experiment(temp)
+            forjson = lfpio.gather_io_data_to_json(exp_temp_res)
+            lfpio.input_output_experiment_plot(exp_temp_res, uniquekey)
+            all_res.append(forjson)
+            print(f"appending {uniquekey}")
+        # now write the json
+        for result in all_res:
+            base_name = result[0]["unique_id"] + "_io_results.json"
+            path_base, _ = os.path.split(result[0]["file"])
+            p = os.path.join(path_base, base_name)
+            with open(p, "w") as resultwrite:
+                json.dump(result, resultwrite)
+                print(f"writing {result[0]['unique_id']} to {p}\n\n")
     else:
         print(f"ERROR! did not understand options in {cmd_line.analysis_type}")
 

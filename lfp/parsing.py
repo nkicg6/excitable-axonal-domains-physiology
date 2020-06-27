@@ -111,9 +111,14 @@ def make_io_analysis_datastructure(datadict: dict) -> dict:
         stop_ind = _get_key("stop_ind")
         use_opt = _get_key("use_opt")
         peak_direction = _get_key("peak_direction")
+        animal_ref = _get_key("Animal-ref")
+        slice_ref = _get_key("Slice-ref")
         iodict[uid]["metadata"].append(datadict[k])
         iodict[uid]["io"].append(
             {
+                "unique_id": uid,
+                "animal_ref": animal_ref,
+                "slice_ref": slice_ref,
                 "stim": io,
                 "file": fname,
                 "start_ind": start_ind,
