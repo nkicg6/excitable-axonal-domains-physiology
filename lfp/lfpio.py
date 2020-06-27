@@ -36,7 +36,6 @@ def _find_peak(x_subset, y_subset, peak_direction):
     if len(peak_ind) != 1:
         peak_y = np.array([])
         peak_x = np.array([])
-        # print(f"No or multiple peaks found, peaks = {peak_ind}")
     else:
         peak_y = y_subset[peak_ind]
         peak_x = x_subset[peak_ind]
@@ -120,11 +119,20 @@ def input_output_experiment_plot(result_input_output_experiment: list, title: st
     print(f"saving to {savepath}")
 
 
+def _list_to_none_or_val(l):
+    if not l:
+        return None
+    if len(l) == 1:
+        return l[0]
+    if len(l) != 0:
+        return "ERROR"
+
+
 def _np_array_to_float_or_list(d):
     result = {}
     for k in d.keys():
         if isinstance(d[k], np.ndarray):
-            result[k] = d[k].tolist()
+            result[k] = _list_to_none_or_val(d[k].tolist())
         else:
             result[k] = d[k]
     return result
