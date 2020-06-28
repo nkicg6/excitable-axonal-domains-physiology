@@ -33,27 +33,47 @@ def _find_peak(x_subset, y_subset, peak_direction):
     peak_ind, peak_dict = s.find_peaks(
         direction * y_subset, distance=10, prominence=5, width=10, height=20
     )
-    if len(peak_ind) != 1:
+
+    if len(peak_ind) < 1:
         peak_y = np.array([])
         peak_x = np.array([])
-    else:
-        peak_y = y_subset[peak_ind]
-        peak_x = x_subset[peak_ind]
-
-    return {
+        return {
         "peak_subset_index": peak_ind,
         "peak_x_val": peak_x,
         "peak_y_val": peak_y,
         "peak_dict": peak_dict,
-    }
+        }
+    if len(peak_ind) > 1:
+        print(f"[PEAK INDICIES N = {len(peak_ind)}]")
+        # hack to return as an array
+        peak_ind = int(peak_ind[0])
+        print(f"[TYPE PEAK IND] {type(peak_ind)}")
+        peak_y = np.asarray([y_subset[peak_ind]])
+        peak_x = np.asarray([x_subset[peak_ind]])
+        return {
+        "peak_subset_index": peak_ind,
+        "peak_x_val": peak_x,
+        "peak_y_val": peak_y,
+        "peak_dict": peak_dict,
+        }
+    if len(peak_ind) == 1:
+        peak_y = y_subset[peak_ind]
+        peak_x = x_subset[peak_ind]
+        return {
+        "peak_subset_index": peak_ind,
+        "peak_x_val": peak_x,
+        "peak_y_val": peak_y,
+        "peak_dict": peak_dict,
+        }
 
 
 def _get_amplitude(peak_y_val, baseline_y):
-    if not len(peak_y_val) == 0:
-        return baseline_y - peak_y_val
-    else:
+    if peak_y_val.size == 1:
+        return abs(baseline_y - peak_y_val)
+    if peak_y_val.size > 1:
+        return abs(baseline_y - peak_y_val[0])
+    if peak_y_val.size < 1:
         return 0
-
 
 def _fmt_results_dict(amplitude, subset_x, subset_y, peak_results, entry):
     return {
