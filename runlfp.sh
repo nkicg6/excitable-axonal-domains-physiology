@@ -2,6 +2,8 @@
 # Run LFP analysis
 # must be in venv `lfp`
 
+set -e
+
 LFPPATHS=("/Users/nick/Dropbox/lab_notebook/projects_and_data/mnc/analysis_and_data/extracellular_lfp/data/2020-03-19/"\
               "/Users/nick/Dropbox/lab_notebook/projects_and_data/mnc/analysis_and_data/extracellular_lfp/data/2020-03-18/"\
               "/Users/nick/Dropbox/lab_notebook/projects_and_data/mnc/analysis_and_data/extracellular_lfp/data/2020-03-17"\
@@ -13,3 +15,4 @@ for path in ${LFPPATHS[*]};
 do
     python lfp -d $path -a "io"
 done
+echo "LFP IO ANALYSIS DONE!"

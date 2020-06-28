@@ -44,10 +44,8 @@ def _find_peak(x_subset, y_subset, peak_direction):
             "peak_dict": peak_dict,
         }
     if len(peak_ind) > 1:
-        print(f"[PEAK INDICIES N = {len(peak_ind)}]")
         # hack to return as an array
         peak_ind = int(peak_ind[0])
-        print(f"[TYPE PEAK IND] {type(peak_ind)}")
         peak_y = np.asarray([y_subset[peak_ind]])
         peak_x = np.asarray([x_subset[peak_ind]])
         return {
