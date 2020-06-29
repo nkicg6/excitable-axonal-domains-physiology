@@ -139,6 +139,7 @@ def input_output_experiment_plot(result_input_output_experiment: list, title: st
 
 
 def _list_to_none_or_val(l, current_column):
+    # mark as deadcode
     if not l:
         return None
     if len(l) == 1:
@@ -154,7 +155,10 @@ def _np_array_to_float_or_list(d):
     result = {}
     for k in d.keys():
         if isinstance(d[k], np.ndarray):
-            result[k] = _list_to_none_or_val(d[k].tolist(), k)
+            if d[k].size == 0:
+                result[k] = None
+            else:
+                result[k] = d[k].tolist()  # _list_to_none_or_val(d[k].tolist(), k)
         else:
             result[k] = d[k]
     return result
