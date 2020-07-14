@@ -5,8 +5,14 @@ json_data = IO_parse_json_main('path/to/datadir')
 csv_data = IO_parse_csv_main('path/to/datadir', 'io')
 merged = merge_csv_json(csv_data, json_data)
 datastructure = make_io_analysis_datastructure(merged)
-"""
 
+Refractoriness analysis
+-----------------------
+csv_data = IO_parse_csv_main('path/to/datadir', 'Refract-exp')
+exp_data = make_refractory_dict('path/to/datadir', csv_data)
+
+"""
+from collections import defaultdict
 import csv
 import json
 import os
@@ -136,3 +142,14 @@ def make_io_analysis_datastructure(datadict: dict) -> dict:
     for k in iodict.keys():
         iodict[k]["io"].sort(key=lambda iod: iod["stim"])  # sort in place
     return iodict
+
+
+def make_refractory_dict(base: str, d: dict) -> dict:
+    """returns a dictionary containing all refractory experiments broken down by unique id (key) and a list of 5 paths"""
+    newd = defaultdict(list)
+    for k in d.keys():
+        uid = d[k]["uniqueid"]
+        p = os.path.join(base, d[k]["Fname-ref"])
+        assert os.path.exists(p), f"path {p} does not exist."
+        newd[uid].append(p)
+    return newd
