@@ -2,6 +2,7 @@
 from collections import defaultdict
 import os
 import numpy as np
+from scipy import signal
 import pyabf
 import matplotlib.pyplot as plt
 
@@ -65,42 +66,60 @@ def apply_stim_artifact_template(abf, sweep, ms_offset):
     (stim_one, stim_two) = _find_signal_index(abf.sweepY)
     template = make_stim_artifact_template(abf, ms_offset)
     offset = int(abf.dataPointsPerMs * ms_offset)
+    small_offset = int(abf.dataPointsPerMs * 1)
     abf.setSweep(sweep, channel=0)
     l_sweep = len(abf.sweepY)
     template_trace = np.zeros(l_sweep)
     template_trace[stim_one : stim_one + offset] = template
     template_trace[stim_two : stim_two + offset] = template
     subtracted = abf.sweepY - template_trace
-    return subtracted, template_trace
+    return (
+        subtracted,
+        template_trace,
+        (stim_one + small_offset, stim_two + small_offset),
+    )
+
+
+def find_peak_after_stim(trace, stim_time_index):
+    peaks, _ = signal.find_peaks(-trace, distance=25, height=50, prominence=30)
+    return [p for p in peaks if p > stim_time_index]
 
 
 ## testing template matching
 
-sweep = 1
-ms_offset = 1
-abf = pyabf.ABF(exp_data["199034-1_1_2"][0])
+sweep = 10
+ms_offset = 1.0
+abf = pyabf.ABF(exp_data["199034-lear_1_1"][0])
 
 fig = plt.figure(figsize=(8, 8))
 ax1 = fig.add_subplot(121)
 ax2 = fig.add_subplot(122, sharex=ax1, sharey=ax1)
 
-template_subtracted, template_trace = apply_stim_artifact_template(
+(template_subtracted, template_trace, stims) = apply_stim_artifact_template(
     abf, sweep, ms_offset
 )
+
+peaks = find_peak_after_stim(template_subtracted, stims[1])
 
 abf.setSweep(sweep, channel=0)
 
 ax1.plot(abf.sweepX, abf.sweepY, alpha=0.3, label=f"sweep {sweep}")
 ax1.plot(abf.sweepX, template_trace, alpha=0.5, label=f"sweep {sweep} template")
-abf.setSweep(10)
-ax1.plot(abf.sweepX, abf.sweepY, alpha=0.3, label="sweep 10")
 
 ax2.plot(abf.sweepX, template_subtracted, label=f"sweep {sweep} template subtracted")
-
-ax1.set_xlim([0.5, 0.56])
-ax1.set_ylim([-250, 100])
+ax2.axvline(abf.sweepX[stims[1]], color="black")
+ax2.plot(abf.sweepX[peaks], abf.sweepY[peaks], "r*")
+ax1.set_xlim([0.52, 0.53])
+ax1.set_ylim([-350, 100])
 ax1.legend()
 ax2.legend()
 plt.show()
 
-## we can use this method, but then subtract the single template of the first pulse (~ 9ms past first stim of first sweep) from the *second* stim point. Even neglecting the stimulus artifact subtraction this could work.
+
+## This method above seems to work well.
+## we need to work with the first 16 sweeps (10ms IPI to 2ms IPI).
+## Need a function that takes the five files and returns a dict with:
+## - mean y data from channel 0
+## - dataPointsPerMs
+## - mean y data from channel 1
+## should take in a list of files, return the data structure described above
