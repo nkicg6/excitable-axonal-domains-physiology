@@ -50,36 +50,6 @@ def print_stim_times(abf):
 
 
 ## testing template matching
-
-sweep = 10
-ms_offset = 1.0
-abf = pyabf.ABF(exp_data["199034-lear_1_1"][0])
-
-fig = plt.figure(figsize=(8, 8))
-ax1 = fig.add_subplot(121)
-ax2 = fig.add_subplot(122, sharex=ax1, sharey=ax1)
-
-(template_subtracted, template_trace, stims) = apply_stim_artifact_template(
-    abf, sweep, ms_offset
-)
-
-peaks = find_peak_after_stim(template_subtracted, stims[1])
-
-abf.setSweep(sweep, channel=0)
-
-ax1.plot(abf.sweepX, abf.sweepY, alpha=0.3, label=f"sweep {sweep}")
-ax1.plot(abf.sweepX, template_trace, alpha=0.5, label=f"sweep {sweep} template")
-
-ax2.plot(abf.sweepX, template_subtracted, label=f"sweep {sweep} template subtracted")
-ax2.axvline(abf.sweepX[stims[1]], color="black")
-ax2.plot(abf.sweepX[peaks], abf.sweepY[peaks], "r*")
-ax1.set_xlim([0.52, 0.53])
-ax1.set_ylim([-350, 100])
-ax1.legend()
-ax2.legend()
-plt.show()
-
-
 ## This method above seems to work well.
 ## we need to work with the first 16 sweeps (10ms IPI to 2ms IPI).
 ## Need a function that takes the five files and returns a dict with the following information per sweep:
