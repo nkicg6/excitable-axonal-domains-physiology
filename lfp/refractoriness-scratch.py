@@ -115,20 +115,25 @@ def make_data_structure(files: list, max_sweep: int) -> dict:
     return structure
 
 
-def apply_artifat_template(data_struct: dict, ms_offset: float = 5):
+def apply_artifat_template(data_struct: dict, ms_offset: float = 2):
     ds = data_struct.copy()
     offset = int(
         ds["sweep_0"]["ms_sample_rate"] * ms_offset
     )  # assumes all offsets within data_struct are equal
     l_sweep = len(ds["sweep_0"]["y"])
-
+    template_acc = []
     for k in ds.keys():
         stim_one, stim_two = ds[k]["stim_indicies"]
         # y_template[stim_one : stim_one + offset] = template
         template = ds[k]["y"][stim_one : stim_one + offset]
+        template_acc.append(template)
 
+    template_acc = np.asarray(template_acc)
+    template_acc = template_acc.mean(axis=0)
+    for k in ds.keys():
+        stim_one, stim_two = ds[k]["stim_indicies"]
         y_template = np.zeros(l_sweep)
-        y_template[stim_two : stim_two + offset] = template
+        y_template[stim_two : stim_two + offset] = template_acc
         subtracted = ds[k]["y"] - y_template
         ds[k]["template"] = y_template
         ds[k]["no_artifact"] = subtracted
@@ -144,8 +149,8 @@ def _calc_mean_conditioning_amplitude(data_struct: dict, offset_ms=2):
     pass
 
 
-experiment = make_data_structure(exp_data["199034-lear_4_2"], 16)
-new_exp = apply_artifat_template(experiment, 9)
+experiment = make_data_structure(exp_data["199034-lear_4_1"], 16)
+new_exp = apply_artifat_template(experiment, 3)
 ##
 
 fig = plt.figure(figsize=(8, 8))
@@ -161,39 +166,17 @@ sweep = 0
 # )
 ax1.plot(
     new_exp[f"sweep_{sweep}"]["x"],
-    new_exp[f"sweep_{sweep}"]["y"],
+    new_exp[f"sweep_{sweep}"]["no_artifact"],
     label=f"s{sweep}",
     color="green",
     alpha=0.4,
 )
-ax1.plot(
-    new_exp[f"sweep_{sweep}"]["x"],
-    new_exp[f"sweep_{sweep}"]["template"],
-    label=f"template sweep s{sweep}",
-    color="green",
-)
-
-# sweep = 1
-# # ax1.plot(
-# #     new_exp[f"sweep_{sweep}"]["x"],
-# #     new_exp[f"sweep_{sweep}"]["no_artifact"],
-# #     label=f"s{sweep} cleaned",
-# #     alpha=0.4,
-# # )
-# ax1.plot(
-#     new_exp[f"sweep_{sweep}"]["x"],
-#     new_exp[f"sweep_{sweep}"]["y"],
-#     label=f"s{sweep}",
-#     color="red",
-#     alpha=0.4,
-# )
 # ax1.plot(
 #     new_exp[f"sweep_{sweep}"]["x"],
 #     new_exp[f"sweep_{sweep}"]["template"],
-#     color="grey",
-
+#     label=f"template sweep s{sweep}",
+#     color="green",
 # )
-
 
 sweep = 6
 # ax1.plot(
@@ -204,17 +187,17 @@ sweep = 6
 # )
 ax1.plot(
     new_exp[f"sweep_{sweep}"]["x"],
-    new_exp[f"sweep_{sweep}"]["y"],
+    new_exp[f"sweep_{sweep}"]["no_artifact"],
     label=f"s{sweep}",
     color="blue",
     alpha=0.4,
 )
-ax1.plot(
-    new_exp[f"sweep_{sweep}"]["x"], new_exp[f"sweep_{sweep}"]["template"], color="blue",
-)
+# ax1.plot(
+#     new_exp[f"sweep_{sweep}"]["x"], new_exp[f"sweep_{sweep}"]["template"], color="blue",
+# )
 
 ax1.legend()
-ax1.set_xlim([0.515, 0.535])
+# ax1.set_xlim([0.515, 0.535])
 plt.show()
 
 for k in exp_data.keys():
