@@ -49,42 +49,6 @@ def print_stim_times(abf):
         return
 
 
-## template matching
-def make_stim_artifact_template(abf, ms_offset):
-    """make template for artifact subtraction. Assumes stim channel is 1, and that the first stim is used for the template
-    returns a waveform within an offset window containing stim_init:stim_init+ms_offset"""
-    abf.setSweep(0, channel=1)
-    stims = _find_signal_index(abf.sweepY)
-    offset = int(abf.dataPointsPerMs * ms_offset)
-    abf.setSweep(0, channel=0)
-    return abf.sweepY[stims[0] : stims[0] + offset]
-
-
-def apply_stim_artifact_template(abf, sweep, ms_offset):
-    """returns a trace with a template subtracted at both stim locations for the target sweep"""
-    abf.setSweep(sweep, channel=1)
-    (stim_one, stim_two) = _find_signal_index(abf.sweepY)
-    template = make_stim_artifact_template(abf, ms_offset)
-    offset = int(abf.dataPointsPerMs * ms_offset)
-    small_offset = int(abf.dataPointsPerMs * 1)
-    abf.setSweep(sweep, channel=0)
-    l_sweep = len(abf.sweepY)
-    template_trace = np.zeros(l_sweep)
-    template_trace[stim_one : stim_one + offset] = template
-    template_trace[stim_two : stim_two + offset] = template
-    subtracted = abf.sweepY - template_trace
-    return (
-        subtracted,
-        template_trace,
-        (stim_one + small_offset, stim_two + small_offset),
-    )
-
-
-def find_peak_after_stim(trace, stim_time_index):
-    peaks, _ = signal.find_peaks(-trace, distance=25, height=50, prominence=30)
-    return [p for p in peaks if p > stim_time_index]
-
-
 ## testing template matching
 
 sweep = 10
@@ -130,8 +94,18 @@ def make_data_structure(files: list, max_sweep: int) -> dict:
     sample_freq = pyabf.ABF(files[0]).dataPointsPerMs
     for sweep in range(max_sweep + 1):
         x, mean_data = calc_refract_mean(files, sweep, channel=0)
+        # greater_500 = np.where(mean_data > 300)[0]
+        # less_500 = np.where(mean_data < -500)[0]
+        # mean_data[greater_500] = 0
+        # mean_data[less_500] = 0
+        # mean_data = signal.savgol_filter(mean_data, window_length=21, polyorder=3, mode="constant" )
+
         _, mean_stim_data = calc_refract_mean(files, sweep, channel=1)
         signal_indicies = _find_signal_index(mean_stim_data)
+        assert (
+            len(signal_indicies) == 2
+        ), f"signal indicies {signal_indicies} is incorrect!"
+        # signal_indicies = signal_indicies-2 # TESTING HACK
         structure[f"sweep_{sweep}"] = {
             "x": x,
             "y": mean_data,
@@ -140,39 +114,107 @@ def make_data_structure(files: list, max_sweep: int) -> dict:
         }
     return structure
 
-def apply_artifat_template(data_struct: dict, ms_offset: float =5):
+
+def apply_artifat_template(data_struct: dict, ms_offset: float = 5):
     ds = data_struct.copy()
-    offset = int(ds['sweep_0']['ms_sample_rate']*ms_offset) # assumes all offsets equal
-    stims = ds['sweep_0']['stim_indicies']
-    template = ds['sweep_0']['y'][stims[0]:stims[0]+offset]
-    l_sweep = len(ds['sweep_0']['y'])
+    offset = int(
+        ds["sweep_0"]["ms_sample_rate"] * ms_offset
+    )  # assumes all offsets within data_struct are equal
+    l_sweep = len(ds["sweep_0"]["y"])
+
     for k in ds.keys():
-        stim_one, stim_two = ds[k]['stim_indicies']
+        stim_one, stim_two = ds[k]["stim_indicies"]
+        # y_template[stim_one : stim_one + offset] = template
+        template = ds[k]["y"][stim_one : stim_one + offset]
+
         y_template = np.zeros(l_sweep)
-        #y_template[stim_one : stim_one + offset] = template
         y_template[stim_two : stim_two + offset] = template
-        subtracted = ds[k]['y'] - y_template
-        ds[k]['no_artifact'] = subtracted
-        ds[k]['ms_offset'] = ms_offset
+        subtracted = ds[k]["y"] - y_template
+        ds[k]["template"] = y_template
+        ds[k]["no_artifact"] = subtracted
+        ds[k]["ms_offset"] = ms_offset
     return ds
+
 
 def _calc_mean_conditioning_amplitude(data_struct: dict, offset_ms=2):
     ds = data_struct.copy()
-    stop_offset = int(ds['sweep_0']['stim_indicies'][0]+ds['sweep_0']['ms_sample_rate']*offset_ms)
+    stop_offset = int(
+        ds["sweep_0"]["stim_indicies"][0] + ds["sweep_0"]["ms_sample_rate"] * offset_ms
+    )
     pass
 
 
-experiment = make_data_structure(exp_data["199034-lear_2_1"], 16)
-new_exp = apply_artifat_template(experiment, 3)
+experiment = make_data_structure(exp_data["199034-lear_4_2"], 16)
+new_exp = apply_artifat_template(experiment, 9)
 ##
 
 fig = plt.figure(figsize=(8, 8))
 ax1 = fig.add_subplot(111)
-#for i in new_exp.keys():
+# for i in new_exp.keys():
 #    ax1.plot(new_exp[i]['x'], new_exp[i]["no_artifact"], label=f"no artifact {i}", alpha=0.4)
-ax1.plot(new_exp['sweep_0']['x'], new_exp['sweep_0']["no_artifact"], label="s0 no artifact", alpha=0.4)
-ax1.plot(new_exp['sweep_15']['x'], new_exp['sweep_15']["no_artifact"], label="s12 no artifact", alpha=0.4)
-#ax1.legend()
+sweep = 0
+# ax1.plot(
+#     new_exp[f"sweep_{sweep}"]["x"],
+#     new_exp[f"sweep_{sweep}"]["no_artifact"],
+#     label=f"s{sweep} cleaned",
+#     alpha=0.4,
+# )
+ax1.plot(
+    new_exp[f"sweep_{sweep}"]["x"],
+    new_exp[f"sweep_{sweep}"]["y"],
+    label=f"s{sweep}",
+    color="green",
+    alpha=0.4,
+)
+ax1.plot(
+    new_exp[f"sweep_{sweep}"]["x"],
+    new_exp[f"sweep_{sweep}"]["template"],
+    label=f"template sweep s{sweep}",
+    color="green",
+)
+
+# sweep = 1
+# # ax1.plot(
+# #     new_exp[f"sweep_{sweep}"]["x"],
+# #     new_exp[f"sweep_{sweep}"]["no_artifact"],
+# #     label=f"s{sweep} cleaned",
+# #     alpha=0.4,
+# # )
+# ax1.plot(
+#     new_exp[f"sweep_{sweep}"]["x"],
+#     new_exp[f"sweep_{sweep}"]["y"],
+#     label=f"s{sweep}",
+#     color="red",
+#     alpha=0.4,
+# )
+# ax1.plot(
+#     new_exp[f"sweep_{sweep}"]["x"],
+#     new_exp[f"sweep_{sweep}"]["template"],
+#     color="grey",
+
+# )
+
+
+sweep = 6
+# ax1.plot(
+#     new_exp[f"sweep_{sweep}"]["x"],
+#     new_exp[f"sweep_{sweep}"]["no_artifact"],
+#     label=f"s{sweep} cleaned",
+#     alpha=0.4,
+# )
+ax1.plot(
+    new_exp[f"sweep_{sweep}"]["x"],
+    new_exp[f"sweep_{sweep}"]["y"],
+    label=f"s{sweep}",
+    color="blue",
+    alpha=0.4,
+)
+ax1.plot(
+    new_exp[f"sweep_{sweep}"]["x"], new_exp[f"sweep_{sweep}"]["template"], color="blue",
+)
+
+ax1.legend()
+ax1.set_xlim([0.515, 0.535])
 plt.show()
 
 for k in exp_data.keys():
@@ -181,3 +223,4 @@ for k in exp_data.keys():
     except IndexError:
         print(exp_data[k])
 ######### This is not working. try just subtracting the
+### maybe calculate the mean conditioning pulse for all sweeps. Then use that as the template.
