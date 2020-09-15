@@ -64,14 +64,15 @@ def make_data_structure(files: list, max_sweep: int) -> dict:
     sample_freq = pyabf.ABF(files[0]).dataPointsPerMs
     for sweep in range(max_sweep + 1):
         x, mean_data = calc_refract_mean(files, sweep, channel=0)
-        # greater_500 = np.where(mean_data > 300)[0]
-        # less_500 = np.where(mean_data < -500)[0]
-        # mean_data[greater_500] = 0
-        # mean_data[less_500] = 0
+        toobig = np.where(mean_data > 100)[0]
+        toosmall = np.where(mean_data < -300)[0]
+        mean_data[toobig] = 0
+        mean_data[toosmall] = 0
         # mean_data = signal.savgol_filter(mean_data, window_length=21, polyorder=3, mode="constant" )
 
         _, mean_stim_data = calc_refract_mean(files, sweep, channel=1)
         signal_indicies = _find_signal_index(mean_stim_data)
+        signal_indicies = signal_indicies - 5  # TEST HACK AGAIN
         assert (
             len(signal_indicies) == 2
         ), f"signal indicies {signal_indicies} is incorrect!"
@@ -94,7 +95,6 @@ def apply_artifat_template(data_struct: dict, ms_offset: float = 2):
     template_acc = []
     for k in ds.keys():
         stim_one, stim_two = ds[k]["stim_indicies"]
-        # y_template[stim_one : stim_one + offset] = template
         template = ds[k]["y"][stim_one : stim_one + offset]
         template_acc.append(template)
 
@@ -120,7 +120,7 @@ def _calc_mean_conditioning_amplitude(data_struct: dict, offset_ms=2):
 
 
 experiment = make_data_structure(exp_data["199034-lear_4_1"], 16)
-new_exp = apply_artifat_template(experiment, 3)
+new_exp = apply_artifat_template(experiment, 1)
 ##
 
 fig = plt.figure(figsize=(8, 8))
@@ -134,13 +134,13 @@ sweep = 0
 #     label=f"s{sweep} cleaned",
 #     alpha=0.4,
 # )
-ax1.plot(
-    new_exp[f"sweep_{sweep}"]["x"],
-    new_exp[f"sweep_{sweep}"]["no_artifact"],
-    label=f"s{sweep}",
-    color="green",
-    alpha=0.4,
-)
+# ax1.plot(
+#     new_exp[f"sweep_{sweep}"]["x"],
+#     new_exp[f"sweep_{sweep}"]["no_artifact"],
+#     label=f"s{sweep}",
+#     color="green",
+#     alpha=0.4,
+# )
 # ax1.plot(
 #     new_exp[f"sweep_{sweep}"]["x"],
 #     new_exp[f"sweep_{sweep}"]["template"],
@@ -148,27 +148,34 @@ ax1.plot(
 #     color="green",
 # )
 
-sweep = 6
+sweep = 8
 # ax1.plot(
 #     new_exp[f"sweep_{sweep}"]["x"],
 #     new_exp[f"sweep_{sweep}"]["no_artifact"],
 #     label=f"s{sweep} cleaned",
 #     alpha=0.4,
 # )
+# ax1.plot(
+#     new_exp[f"sweep_{sweep}"]["x"],
+#     new_exp[f"sweep_{sweep}"]["no_artifact"],
+#     label=f"s{sweep}",
+#     color="blue",
+#     alpha=0.4,
+# )
 ax1.plot(
     new_exp[f"sweep_{sweep}"]["x"],
-    new_exp[f"sweep_{sweep}"]["no_artifact"],
+    new_exp[f"sweep_{sweep}"]["template"],
     label=f"s{sweep}",
-    color="blue",
-    alpha=0.4,
+    color="grey",
 )
 # ax1.plot(
 #     new_exp[f"sweep_{sweep}"]["x"], new_exp[f"sweep_{sweep}"]["template"], color="blue",
 # )
 
 ax1.legend()
-# ax1.set_xlim([0.515, 0.535])
 plt.show()
+
+##
 
 for k in exp_data.keys():
     try:
@@ -177,3 +184,13 @@ for k in exp_data.keys():
         print(exp_data[k])
 ######### This is not working. try just subtracting the
 ### maybe calculate the mean conditioning pulse for all sweeps. Then use that as the template.
+a = np.asarray([-3, -5, -5, -10, -10, -5, -4, -3, -2])
+b = a.copy()
+b[0:2] = 0
+b[0:2] = 0
+c = b - a
+plt.plot(a, label="a")
+plt.plot(b, label="b")
+plt.plot(c, label="c")
+plt.legend()
+plt.show()

@@ -1,4 +1,14 @@
-Analysis for thesis project. 
+#+TITLE: Code used for PhD project
+#+DATE: 2020-07-25
+#+OPTIONS: toc:nil author:nil title:nil date:nil num:nil ^:{} \n:1 todo:nil
+#+PROPERTY: header-args :eval never-export
+#+LATEX_HEADER: \usepackage[margin=1.0in]{geometry}
+#+LATEX_HEADER: \hypersetup{colorlinks=true,citecolor=black,linkcolor=black,urlcolor=blue,linkbordercolor=blue,pdfborderstyle={/S/U/W 1}}
+#+LATEX_HEADER: \usepackage[round]{natbib}
+#+LATEX_HEADER: \renewcommand{\bibsection}
+#+ARCHIVE: daily_archive.org::datetree/* From master todo
+
+Analysis and utility code used for thesis project. 
 
 * LFP
 - analysis routines for LFP extracellular recording analysis.
@@ -10,3 +20,7 @@ Analysis for thesis project.
 ** DONE save data from each good experiment?
    CLOSED: [2020-06-27 Sat 06:58]
 Manual writing an =exclude.json=
+* utility
+Miscellaneous scripts used for analysis or organization tasks
+** Table of contents
+
