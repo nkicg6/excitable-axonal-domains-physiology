@@ -22,3 +22,15 @@ def test_bad_read_abf_IO(bad_path_and_map):
     assert sbad["error"] == [
         "io error: ABF file does not exist: /Users/nick/personal_projects/thesis/thesis_ephys/not/real/thing.abf"
     ]
+
+
+def test_golay(good_path_and_map):
+    _, good_map = good_path_and_map
+    filt = steps.abf_golay(good_map, 11, 3)
+    assert filt["savgol_details"] == {"polyorder": 3, "window": 11}
+    assert "filtered" in filt.keys()
+
+
+def test_golay_bad_input(bad_path_and_map):
+    _, bad_map = bad_path_and_map
+    filt = steps.abf_golay(bad_map, 11, 3)
