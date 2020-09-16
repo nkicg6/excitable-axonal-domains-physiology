@@ -1,4 +1,3 @@
-import os
 import pathlib
 import sys
 import pytest
@@ -14,20 +13,6 @@ def good_path_and_map():
         "path": path,
         "sweep": 1,
         "channel": 0,
-        "x": np.asarray(
-            [
-                0.0,
-                0.0001,
-                0.0001,
-            ]
-        ),
-        "y": np.asarray(
-            [
-                -60.4248,
-                -61.0352,
-                -60.4248,
-            ]
-        ),
         "short_name": "20104002",
         "error": [],
     }
