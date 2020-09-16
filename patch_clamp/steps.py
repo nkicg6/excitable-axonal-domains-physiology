@@ -40,7 +40,11 @@ def read_abf_IO(path, sweep, channel):
 
 def abf_golay(abfd, window=11, polyorder=3):
     abf = abfd.copy()
-    filtered = s.savgol_filter(abf["y"], polyorder=polyorder, window_length=window)
+    try:
+        filtered = s.savgol_filter(abf["y"], polyorder=polyorder, window_length=window)
+    except ValueError as e:
+        filtered = np.asarray([])
+        abf["error"].append(f"filter error: {e}")
     abf["filtered"] = filtered
     abf["savgol_details"] = {"polyorder": polyorder, "window": window}
     return abf
