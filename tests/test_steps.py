@@ -54,3 +54,27 @@ def test_count_spikes_filtered_false(good_path_and_map):
     good_map = steps.abf_golay(good_map)
     spike_map = steps.count_spikes(good_map, threshold=0.25, use_filtered=False)
     assert not spike_map["peak_props"]["use_filtered?"]
+
+
+def test_count_spikes_bad_map_filtered_true(bad_path_and_map):
+    _, bad_map = bad_path_and_map
+    bad_map = steps.abf_golay(bad_map)
+    spike_map = steps.count_spikes(bad_map, threshold=0.25, use_filtered=True)
+    assert spike_map["peak_props"]["use_filtered?"]
+    assert spike_map["peak_props"] == {
+        "no_data": "no_data",
+        "threshold": None,
+        "use_filtered?": True,
+    }
+
+
+def test_count_spikes_bad_map_filtered_false(bad_path_and_map):
+    _, bad_map = bad_path_and_map
+    bad_map = steps.abf_golay(bad_map)
+    spike_map = steps.count_spikes(bad_map, threshold=0.25, use_filtered=False)
+    assert not spike_map["peak_props"]["use_filtered?"]
+    assert spike_map["peak_props"] == {
+        "no_data": "no_data",
+        "threshold": None,
+        "use_filtered?": False,
+    }

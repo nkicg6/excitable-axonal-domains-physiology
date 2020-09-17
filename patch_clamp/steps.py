@@ -61,13 +61,17 @@ def count_spikes(abfd, threshold=0.25, use_filtered=True):
     mean value will be negative."""
     abf = abfd.copy()
     if use_filtered:
-        print("Using filtered")
         data = abf["filtered"].copy()
         filt_opt = True  # track branch taken
     if not use_filtered:
-        print("Not using filtered")
         data = abf["y"].copy()
         filt_opt = False  # track branch taken
+    if data.size == 0:
+        abf["peaks"] = np.asarray([])
+        abf["peak_props"] = {"no_data": "no_data"}
+        abf["peak_props"]["threshold"] = None
+        abf["peak_props"]["use_filtered?"] = filt_opt
+        return abf
     threshold = abs(data.mean() * threshold) + data.mean()
     peaks, props = s.find_peaks(data, height=threshold, distance=11)
     abf["peaks"] = peaks
