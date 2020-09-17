@@ -18,6 +18,7 @@ def read_abf_IO(path, sweep, channel):
         data = {
             "path": path,
             "sweep": sweep,
+            "sweep_list": abf.sweepList,
             "channel": channel,
             "x": abf.sweepX,
             "y": abf.sweepY,
@@ -31,6 +32,7 @@ def read_abf_IO(path, sweep, channel):
         return {
             "path": path,
             "sweep": sweep,
+            "sweep_list": [],
             "channel": channel,
             "x": np.asarray([]),
             "y": np.asarray([]),
@@ -81,17 +83,44 @@ def count_spikes(abfd, threshold=0.25, use_filtered=True):
     return abf
 
 
-if __name__ == "__main__":
-    half_ms_window = 11  # data points for filter
-    degree = 3  # based on Mae's paper
+def filter_stim_indicies_cc01(abfd):
+    abf = abfd.copy()
+    assert abf["protocol"] == "cc_01-steps"
+    start_x_ind = np.where(abf["x"][abf["peaks"]] > abf["x"][10625])[0][0]
+    stop_x_ind = np.where(abf["x"][abf["peaks"]] < abf["x"][30627])[0][-1]
+    abf["during_stim_peaks"] = abf["peaks"][start_x_ind:stop_x_ind]
+    print(f"len peaks {len(abf['peaks'])}")
+    print(f"len filtered peaks {len(abf['during_stim_peaks'])}")
+    return abf
 
-    abf = abf_golay(read_abf_IO(cc01test, 5, 0), half_ms_window, degree)
-    abf = count_spikes(abf, threshold=0.25, use_filtered=False)
-    p = abf["peaks"]
 
-    plt.plot(abf["x"], abf["filtered"])
-    plt.plot(abf["x"][p], abf["filtered"][p], ".")
-    plt.hlines(y=abf["peak_props"]["threshold"], xmin=abf["x"][0], xmax=abf["x"][-1])
-    # filter the data with a golay filter and plot
+# to measure:
+# - time of each spike for each step in a dict where the keys are the sweeps and the
+#   values are the spike times
+# Then, I can write this out to disc and do the calculations later.
+# TODO:
+# - make the fn to compose and build the dict to serialize to disc
+# - use the previously written function to find all the CC01 files to use.
+# - must bin by 1/2 ms or something and calculate spike or not spike in each 1/2 ms.
+# That's how you build the raster. But first, just write the spike times out
+# record all spike times. build raster plots.
+# see p 31 of theoretical neuroscience
+# then, start binning the data, and calculate the mean and variance for each bin.
+#
+half_ms_window = 11  # data points for filter
+degree = 3  # based on Mae's paper
 
-    plt.show()
+abf = abf_golay(read_abf_IO(cc01test, 5, 0), half_ms_window, degree)
+abf = filter_stim_indicies_cc01(count_spikes(abf, threshold=0.25, use_filtered=True))
+p = abf["peaks"]
+p2 = abf["during_stim_peaks"]
+plt.plot(abf["x"], abf["filtered"])
+plt.plot(abf["x"][p], abf["filtered"][p], ".")
+plt.plot(abf["x"][p2], abf["filtered"][p2], "*")
+plt.hlines(y=abf["peak_props"]["threshold"], xmin=abf["x"][0], xmax=abf["x"][-1])
+plt.vlines(x=abf["x"][10625], ymin=-80, ymax=30, color="red")
+plt.vlines(x=abf["x"][30624], ymin=-80, ymax=30, color="red")
+print(abf["x"][30624] - abf["x"][10625])
+# filter the data with a golay filter and plot
+
+plt.show()
