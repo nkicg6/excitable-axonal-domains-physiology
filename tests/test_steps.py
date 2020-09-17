@@ -19,9 +19,10 @@ def test_bad_read_abf_IO(bad_path_and_map):
     assert sbad["channel"] == 0
     assert sbad["short_name"] == bad_map["short_name"]
     assert len(sbad["x"]) == len(bad_map["x"])
-    assert sbad["error"] == [
-        "io error: ABF file does not exist: /Users/nick/personal_projects/thesis/thesis_ephys/not/real/thing.abf"
-    ]
+    assert (
+        sbad["error"][0]
+        == "io error: ABF file does not exist: /Users/nick/personal_projects/thesis/thesis_ephys/not/real/thing.abf"
+    )
 
 
 def test_golay(good_path_and_map):
@@ -34,3 +35,8 @@ def test_golay(good_path_and_map):
 def test_golay_bad_input(bad_path_and_map):
     _, bad_map = bad_path_and_map
     filt = steps.abf_golay(bad_map, 11, 3)
+    assert len(filt["filtered"]) == 0
+    assert (
+        filt["error"][0]
+        == "filter error: If mode is 'interp', window_length must be less than or equal to the size of x."
+    )
