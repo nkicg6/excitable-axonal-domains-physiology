@@ -40,3 +40,17 @@ def test_golay_bad_input(bad_path_and_map):
         filt["error"][0]
         == "filter error: If mode is 'interp', window_length must be less than or equal to the size of x."
     )
+
+
+def test_count_spikes_filtered_true(good_path_and_map):
+    _, good_map = good_path_and_map
+    good_map = steps.abf_golay(good_map)
+    spike_map = steps.count_spikes(good_map, threshold=0.25, use_filtered=True)
+    assert spike_map["peak_props"]["use_filtered?"]
+
+
+def test_count_spikes_filtered_false(good_path_and_map):
+    _, good_map = good_path_and_map
+    good_map = steps.abf_golay(good_map)
+    spike_map = steps.count_spikes(good_map, threshold=0.25, use_filtered=False)
+    assert not spike_map["peak_props"]["use_filtered?"]
