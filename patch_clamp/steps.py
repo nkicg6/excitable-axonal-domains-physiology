@@ -75,7 +75,7 @@ def count_spikes(abfd, threshold=0.25, use_filtered=True):
         abf["peak_props"]["use_filtered?"] = filt_opt
         return abf
     threshold = abs(data.mean() * threshold) + data.mean()
-    peaks, props = s.find_peaks(data, height=threshold, distance=11)
+    peaks, props = s.find_peaks(data, height=threshold, distance=15, prominence=5)
     abf["peaks"] = peaks
     abf["peak_props"] = props
     abf["peak_props"]["threshold"] = threshold
@@ -94,6 +94,17 @@ def filter_stim_indicies_cc01(abfd):
     return abf
 
 
+def as_dict(abfd):
+    """returns a dictionary with keys `peaks`, `name`, `path`, `sweep`
+    to be serialized"""
+    out = {}
+    out["peaks"] = abfd["during_stim_peaks"].tolist()
+    out["name"] = abfd["short_name"]
+    out["path"] = abfd["path"]
+    out["sweep"] = abfd["sweep"]
+    return out
+
+
 # to measure:
 # - time of each spike for each step in a dict where the keys are the sweeps and the
 #   values are the spike times
@@ -107,11 +118,13 @@ def filter_stim_indicies_cc01(abfd):
 # see p 31 of theoretical neuroscience
 # then, start binning the data, and calculate the mean and variance for each bin.
 #
+
 half_ms_window = 11  # data points for filter
 degree = 3  # based on Mae's paper
 
 abf = abf_golay(read_abf_IO(cc01test, 5, 0), half_ms_window, degree)
-abf = filter_stim_indicies_cc01(count_spikes(abf, threshold=0.25, use_filtered=True))
+abf = filter_stim_indicies_cc01(count_spikes(abf, threshold=0.5, use_filtered=True))
+
 p = abf["peaks"]
 p2 = abf["during_stim_peaks"]
 plt.plot(abf["x"], abf["filtered"])
@@ -120,7 +133,19 @@ plt.plot(abf["x"][p2], abf["filtered"][p2], "*")
 plt.hlines(y=abf["peak_props"]["threshold"], xmin=abf["x"][0], xmax=abf["x"][-1])
 plt.vlines(x=abf["x"][10625], ymin=-80, ymax=30, color="red")
 plt.vlines(x=abf["x"][30624], ymin=-80, ymax=30, color="red")
-print(abf["x"][30624] - abf["x"][10625])
-# filter the data with a golay filter and plot
-
 plt.show()
+
+list_of_dicts = []
+for sweep in abf["sweep_list"]:
+    abf = abf_golay(read_abf_IO(cc01test, sweep, 0), half_ms_window, degree)
+    abf = filter_stim_indicies_cc01(
+        count_spikes(abf, threshold=0.25, use_filtered=True)
+    )
+    list_of_dicts.append(as_dict(abf))
+    plt.plot(abf["during_stim_peaks"], [sweep for i in abf["during_stim_peaks"]], ".")
+plt.show()
+
+plt.plot(abf["x"], abf["filtered"])
+plt.plot(abf["x"][p], abf["filtered"][p], ".")
+plt.plot(abf["x"][p2], abf["filtered"][p2], "*")
+plt.hlines(y=abf["peak_props"]["threshold"], xmin=abf["x"][0], xmax=abf["x"][-1])
