@@ -1,6 +1,22 @@
 import sqlite3
 
 
+def make_db(path=None):
+    """this is no good get rid of it"""
+    if not path:
+        con = sqlite3.connect(":memory:")
+        cur = con.cursor()
+        cur.execute(
+            """CREATE TABLE testing (short_name TEXT NOT NULL,
+        path TEXT NOT NULL,
+        sweep INTEGER NOT NULL,
+        animal_id TEXT,
+        experiment_date TEXT,
+        peak_indicies TEXT)"""
+        )
+    return sqlite3.connect(path)
+
+
 def list_of_ints_to_str(list_of_ints):
     return ",".join([str(i) for i in list_of_ints])
 
@@ -12,15 +28,7 @@ def str_list_to_list_ints(str_list):
 if __name__ == "__main__":
     connection = sqlite3.connect("test.db")
     cursor = connection.cursor()
-    cursor.execute(
-        """CREATE TABLE testing
-       (short_name TEXT NOT NULL,
-        path TEXT NOT NULL,
-        sweep INTEGER NOT NULL,
-        animal_id TEXT,
-        experiment_date TEXT,
-        peak_indicies TEXT)"""
-    )
+    cursor.execute()
     ld = list_of_dicts[5]
 
     cursor.execute(
