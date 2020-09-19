@@ -1,12 +1,14 @@
 # add metadata to the patch_metadata.db database
+import argparse
 import os
 import csv
 import sqlite3
 import pyabf
 
 SCHEMA_PATH = "schema.sqlite"
-# schema names are keys, csv names are values
+
 CSV_TO_SCHEMA_MAP = {
+    # schema names are keys, csv names are values
     "fname": "file",
     "fpath": "fpath",  # from matching fname to file list
     "protocol": "protocol",  # from reading file
@@ -130,9 +132,9 @@ def insert_db_values(con, cur, metadata):
         "include",
         "notes",
     ]
-    insert_str = f"INSERT INTO metadata ({','.join(items)}) VALUES ({','.join(['?' for i in items])})"
+    insert_str = f"INSERT INTO metadata ({','.join(items)}) VALUES ({','.join(['?' for i in items])}) ON CONFLICT DO NOTHING"
     try:
-        cur.execute(insert_str, (metadata[i] for i in items))
+        cur.execute(insert_str, tuple(metadata[i] for i in items))
         con.commit()
         return 0
     except Exception as e:
@@ -141,17 +143,31 @@ def insert_db_values(con, cur, metadata):
 
 
 def main(data_path, db_path):
+    print("Setting up.")
     con, cur = connect_to_db(db_path)
     csv_meta = parse_csv(get_files(data_path, ".csv")[0])
     all_abfs = files_to_map(get_files(data_path, ".abf"))
     merged = merge_csv_abf_maps(csv_meta, all_abfs)
-    pass
+    final_meta = gather_keys(merged)
+    for item in final_meta:
+        print(f"adding {item['fname']}")
+        insert_db_values(con, cur, item)
+    cur.close()
+    con.close()
+    print("done")
+    return
 
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-db", "--database", help="path to database")
+parser.add_argument("-dir", "--directory", help="path to data")
 
 if __name__ == "__main__":
-    main()
-
-target_path = "/Users/nick/Dropbox/lab_notebook/projects_and_data/mnc/analysis_and_data/patch_clamp/data/passive_membrane_properties_2020-01-16"
-
-
-os.listdir(target_path)
+    args = parser.parse_args()
+    assert os.path.exists(
+        args.database
+    ), f"Database path {args.database} provided does not yet exist."
+    assert os.path.exists(
+        args.directory
+    ), f"Directory path {args.directory} provided does not yet exist."
+    main(args.directory, args.database)
