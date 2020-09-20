@@ -20,6 +20,9 @@ Analysis and utility code used for thesis project.
 ** DONE save data from each good experiment?
    CLOSED: [2020-06-27 Sat 06:58]
 Manual writing an =exclude.json=
+
+* patch_clamp
+analysis for patch clamp data
 * utility
 Miscellaneous scripts used for analysis or organization tasks
 ** Table of contents
