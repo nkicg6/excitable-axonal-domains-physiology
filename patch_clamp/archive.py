@@ -9,6 +9,7 @@ SCHEMA_PATH = "schema.sqlite"
 
 CSV_TO_SCHEMA_MAP = {
     # schema names are keys, csv names are values
+    # meant to standardize names between formats
     "fname": "file",
     "fpath": "fpath",  # from matching fname to file list
     "protocol": "protocol",  # from reading file
@@ -34,7 +35,7 @@ CSV_TO_SCHEMA_MAP = {
 
 
 def get_schema(path):
-    """read schema and strip \n, returning a string"""
+    """read schema and strip \n, returning a single line string"""
     with open(path, "r") as schema:
         schema_text = schema.read()
     return schema_text.replace("\n", " ")
@@ -55,7 +56,8 @@ def make_db(path, table_schema):
 
 
 def connect_to_db(path):
-    """returns the connection to a db which already exists"""
+    """returns the connection and cursor for a database which already exists given
+    the path."""
     assert os.path.exists(path)
     assert os.path.isfile(path)
     connection = sqlite3.connect(path)
