@@ -4,8 +4,7 @@ import pyabf
 import numpy as np
 import scipy.signal as s
 
-
-cc01test = "/Users/nick/Dropbox/lab_notebook/projects_and_data/mnc/analysis_and_data/patch_clamp/data/passive_membrane_properties_2020-01-04/20104002.abf"
+import patch_clamp.database as db
 
 
 def read_abf_IO(path, sweep, channel):
@@ -100,10 +99,21 @@ def filter_stim_indicies_cc01(abfd):
 
 def as_dict(abfd):
     """returns a dictionary with keys `peaks`, `name`, `path`, `sweep`
-    to be serialized"""
+    to be serialized into a database"""
     out = {}
-    out["peaks"] = abfd["during_stim_peaks"].tolist()
+    out["peaks"] = db.list_of_ints_to_str(abfd["during_stim_peaks"].tolist())
     out["name"] = abfd["short_name"]
     out["path"] = abfd["path"]
     out["sweep"] = abfd["sweep"]
     return out
+
+
+def batch_analyze_file(path, half_ms_window, degree):
+    abf = read_abf_IO(path, 0, 0)
+    list_of_dicts = []
+    for sweep in abf["sweep_list"]:
+        abf = abf_golay(read_abf_IO(path, sweep, 0), half_ms_window, degree)
+        temp = count_spikes(abf, threshold=0.5, use_filtered=True)
+        final = filter_stim_indicies_cc01(temp)
+        list_of_dicts.append(as_dict(final))
+    return list_of_dicts

@@ -16,7 +16,7 @@ target = cc01paths[50]
 # record all spike times. build raster plots.
 # see p 31 of theoretical neuroscience
 # then, start binning the data, and calculate the mean and variance for each bin.
-#
+
 
 half_ms_window = 11  # data points for filter
 degree = 3  # based on Mae's paper

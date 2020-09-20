@@ -24,6 +24,21 @@ def add_to_db(path, query_string):
         return 1
 
 
+def add_to_db_parameterized(path, query_string, data):
+    """uses a context manager to open a connection to database at `path` and execute
+    query in `query_string`. Returns a 0 for success or a 1 for failure."""
+    try:
+        con = sqlite3.connect(path)
+        with con:
+            con.execute(query_string, data)
+        con.close()
+        return 0
+    except Exception as e:
+        print(f"Failed to execute. Query: {query_string}\n with error:\n{e}")
+        con.close()
+        return 1
+
+
 def get_paths_for_protocol(path_to_db, prot):
     """returns a list of paths from metadata which matching the protocol `prot` and
     `include` is `yes` or `maybe`"""
