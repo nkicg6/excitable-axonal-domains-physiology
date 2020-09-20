@@ -3,7 +3,7 @@ import patch_clamp.steps as steps
 import patch_clamp.database as db
 
 cc01paths = db.get_paths_for_protocol(db.DATABASE_PATH, "cc_01-steps")
-
+target = cc01paths[50]
 # to measure:
 # - time of each spike for each step in a dict where the keys are the sweeps and the
 #   values are the spike times
@@ -21,7 +21,7 @@ cc01paths = db.get_paths_for_protocol(db.DATABASE_PATH, "cc_01-steps")
 half_ms_window = 11  # data points for filter
 degree = 3  # based on Mae's paper
 
-abf = steps.abf_golay(steps.read_abf_IO(cc01test, 5, 0), half_ms_window, degree)
+abf = steps.abf_golay(steps.read_abf_IO(target, 5, 0), half_ms_window, degree)
 abf = steps.filter_stim_indicies_cc01(
     steps.count_spikes(abf, threshold=0.5, use_filtered=True)
 )
@@ -38,11 +38,10 @@ plt.show()
 
 list_of_dicts = []
 for sweep in abf["sweep_list"]:
-    abf = abf_golay(read_abf_IO(cc01test, sweep, 0), half_ms_window, degree)
-    abf = filter_stim_indicies_cc01(
-        count_spikes(abf, threshold=0.25, use_filtered=True)
-    )
-    list_of_dicts.append(as_dict(abf))
+    abf = steps.abf_golay(steps.read_abf_IO(target, sweep, 0), half_ms_window, degree)
+    temp = steps.count_spikes(abf, threshold=0.5, use_filtered=True)
+    abf = steps.filter_stim_indicies_cc01(temp)
+    list_of_dicts.append(steps.as_dict(abf))
     plt.plot(abf["during_stim_peaks"], [sweep for i in abf["during_stim_peaks"]], ".")
 plt.show()
 
