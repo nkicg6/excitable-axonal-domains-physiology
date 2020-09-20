@@ -27,7 +27,7 @@ def add_to_db(path, query_string):
 def get_paths_for_protocol(path_to_db, prot):
     """returns a list of paths from metadata which matching the protocol `prot` and
     `include` is `yes` or `maybe`"""
-    query = "SELECT fpath FROM metadata WHERE protocol = ? AND include = 'yes' OR include = 'maybe'"
+    query = "SELECT fpath FROM metadata WHERE protocol = ? AND (include = 'yes' OR include = 'maybe')"
     try:
         con = sqlite3.connect(path_to_db)
         con.row_factory = sqlite3.Row
