@@ -86,9 +86,13 @@ def count_spikes(abfd, threshold=0.25, use_filtered=True):
 def filter_stim_indicies_cc01(abfd):
     abf = abfd.copy()
     assert abf["protocol"] == "cc_01-steps"
-    start_x_ind = np.where(abf["x"][abf["peaks"]] > abf["x"][10625])[0][0]
-    stop_x_ind = np.where(abf["x"][abf["peaks"]] < abf["x"][30627])[0][-1]
-    abf["during_stim_peaks"] = abf["peaks"][start_x_ind:stop_x_ind]
+    try:
+        start_x_ind = np.where(abf["x"][abf["peaks"]] > abf["x"][10625])[0][0]
+        stop_x_ind = np.where(abf["x"][abf["peaks"]] < abf["x"][30627])[0][-1]
+        abf["during_stim_peaks"] = abf["peaks"][start_x_ind:stop_x_ind]
+    except IndexError as e:
+        print(f"index error:\n {e}")
+        abf["during_stim_peaks"] = np.asarray([])
     print(f"len peaks {len(abf['peaks'])}")
     print(f"len filtered peaks {len(abf['during_stim_peaks'])}")
     return abf

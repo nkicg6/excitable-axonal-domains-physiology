@@ -46,4 +46,6 @@ def list_of_ints_to_str(list_of_ints):
 
 
 def str_list_to_list_ints(str_list):
+    if not str_list:
+        return []
     return [int(i) for i in str_list.split(",")]
