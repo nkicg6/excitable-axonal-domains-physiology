@@ -3,7 +3,7 @@ import os
 import pyabf
 import numpy as np
 import scipy.signal as s
-import matplotlib.pyplot as plt
+
 
 cc01test = "/Users/nick/Dropbox/lab_notebook/projects_and_data/mnc/analysis_and_data/patch_clamp/data/passive_membrane_properties_2020-01-04/20104002.abf"
 
@@ -103,49 +103,3 @@ def as_dict(abfd):
     out["path"] = abfd["path"]
     out["sweep"] = abfd["sweep"]
     return out
-
-
-# to measure:
-# - time of each spike for each step in a dict where the keys are the sweeps and the
-#   values are the spike times
-# Then, I can write this out to disc and do the calculations later.
-# TODO:
-# - make the fn to compose and build the dict to serialize to disc
-# - use the previously written function to find all the CC01 files to use.
-# - must bin by 1/2 ms or something and calculate spike or not spike in each 1/2 ms.
-# That's how you build the raster. But first, just write the spike times out
-# record all spike times. build raster plots.
-# see p 31 of theoretical neuroscience
-# then, start binning the data, and calculate the mean and variance for each bin.
-#
-
-half_ms_window = 11  # data points for filter
-degree = 3  # based on Mae's paper
-
-abf = abf_golay(read_abf_IO(cc01test, 5, 0), half_ms_window, degree)
-abf = filter_stim_indicies_cc01(count_spikes(abf, threshold=0.5, use_filtered=True))
-
-p = abf["peaks"]
-p2 = abf["during_stim_peaks"]
-plt.plot(abf["x"], abf["filtered"])
-plt.plot(abf["x"][p], abf["filtered"][p], ".")
-plt.plot(abf["x"][p2], abf["filtered"][p2], "*")
-plt.hlines(y=abf["peak_props"]["threshold"], xmin=abf["x"][0], xmax=abf["x"][-1])
-plt.vlines(x=abf["x"][10625], ymin=-80, ymax=30, color="red")
-plt.vlines(x=abf["x"][30624], ymin=-80, ymax=30, color="red")
-plt.show()
-
-list_of_dicts = []
-for sweep in abf["sweep_list"]:
-    abf = abf_golay(read_abf_IO(cc01test, sweep, 0), half_ms_window, degree)
-    abf = filter_stim_indicies_cc01(
-        count_spikes(abf, threshold=0.25, use_filtered=True)
-    )
-    list_of_dicts.append(as_dict(abf))
-    plt.plot(abf["during_stim_peaks"], [sweep for i in abf["during_stim_peaks"]], ".")
-plt.show()
-
-plt.plot(abf["x"], abf["filtered"])
-plt.plot(abf["x"][p], abf["filtered"][p], ".")
-plt.plot(abf["x"][p2], abf["filtered"][p2], "*")
-plt.hlines(y=abf["peak_props"]["threshold"], xmin=abf["x"][0], xmax=abf["x"][-1])
