@@ -5,3 +5,4 @@ __pycache__
 .Rproj.user
 *.Rproj
 .Rhistory
+*.egg-info
