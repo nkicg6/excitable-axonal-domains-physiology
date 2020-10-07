@@ -60,6 +60,16 @@ def list_of_ints_to_str(list_of_ints):
     return ",".join([str(i) for i in list_of_ints])
 
 
+def list_of_floats_to_str(list_of_floats):
+    return ",".join([str(i) for i in list_of_floats])
+
+
+def str_list_to_list_floats(str_list):
+    if not str_list:
+        return []
+    return [float(i) for i in str_list.split(",")]
+
+
 def str_list_to_list_ints(str_list):
     if not str_list:
         return []

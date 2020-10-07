@@ -3,6 +3,7 @@ import numpy as np
 import scipy.signal as s
 
 import patch_clamp.database as db
+import patch_clamp.utils as utils
 
 
 def count_spikes(abfd, threshold=0.25, use_filtered=True):
@@ -58,10 +59,10 @@ def as_dict(abfd):
 
 
 def batch_analyze_file(path, half_ms_window, degree):
-    abf = read_abf_IO(path, 0, 0)
+    abf = utils.read_abf_IO(path, 0, 0)
     list_of_dicts = []
     for sweep in abf["sweep_list"]:
-        abf = abf_golay(read_abf_IO(path, sweep, 0), half_ms_window, degree)
+        abf = utils.abf_golay(utils.read_abf_IO(path, sweep, 0), half_ms_window, degree)
         temp = count_spikes(abf, threshold=0.5, use_filtered=True)
         final = filter_stim_indicies_cc01(temp)
         list_of_dicts.append(as_dict(final))
