@@ -22,7 +22,13 @@ Analysis and utility code used for thesis project.
 Manual writing an =exclude.json=
 
 * patch_clamp
-analysis for patch clamp data
+** steps for spikes
+- =count_steps.py= iterates through all paths and all sweeps, recording all the peaks in the database. 
+- this script can be run from the =patch= virtual environment, from the =ephys= directory using:
+  =python patch_clamp/count_steps.py=
+- For analysis, we will pull those values out of the database and write them to =json=. 
+
+
 * utility
 Miscellaneous scripts used for analysis or organization tasks
 ** Table of contents

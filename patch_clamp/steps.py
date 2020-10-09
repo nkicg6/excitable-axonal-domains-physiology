@@ -32,9 +32,36 @@ def count_spikes(abfd, threshold=0.25, use_filtered=True):
     return abf
 
 
+def count_spikes_simple_threshold(abfd, simple_threshold=-10, use_filtered=True):
+    """similar to `count_spikes`, but uses a set threshold of 5mV as the spike peak."""
+    abf = abfd.copy()
+    if use_filtered:
+        data = abf["filtered"].copy()
+        filt_opt = True  # track branch taken
+    if not use_filtered:
+        data = abf["y"].copy()
+        filt_opt = False  # track branch taken
+    if data.size == 0:
+        abf["peaks"] = np.asarray([])
+        abf["peak_props"] = {"no_data": "no_data"}
+        abf["peak_props"]["threshold"] = simple_threshold
+        abf["peak_props"]["use_filtered?"] = filt_opt
+        return abf
+    peaks, props = s.find_peaks(
+        data, height=simple_threshold, distance=15, prominence=5
+    )
+    abf["peaks"] = peaks
+    abf["peak_props"] = props
+    abf["peak_props"]["threshold"] = simple_threshold
+    abf["peak_props"]["use_filtered?"] = filt_opt
+    return abf
+
+
 def filter_stim_indicies_cc01(abfd):
     abf = abfd.copy()
-    assert abf["protocol"] == "cc_01-steps"
+    assert (
+        abf["protocol"] == "cc_01-steps"
+    ), f"protocol is {abf['protocol']}, should be `cc_01-steps`"
     try:
         start_x_ind = np.where(abf["x"][abf["peaks"]] > abf["x"][10625])[0][0]
         stop_x_ind = np.where(abf["x"][abf["peaks"]] < abf["x"][30627])[0][-1]
@@ -58,12 +85,12 @@ def as_dict(abfd):
     return out
 
 
-def batch_analyze_file(path, half_ms_window, degree):
+def batch_analyze_file(path, half_ms_window, degree, threshold=0.5):
     abf = utils.read_abf_IO(path, 0, 0)
     list_of_dicts = []
     for sweep in abf["sweep_list"]:
         abf = utils.abf_golay(utils.read_abf_IO(path, sweep, 0), half_ms_window, degree)
-        temp = count_spikes(abf, threshold=0.5, use_filtered=True)
+        temp = count_spikes(abf, threshold=threshold, use_filtered=True)
         final = filter_stim_indicies_cc01(temp)
         list_of_dicts.append(as_dict(final))
     return list_of_dicts
