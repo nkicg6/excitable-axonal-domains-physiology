@@ -6,14 +6,9 @@ import pyabf
 
 import patch_clamp.database as db
 
-
-def get_groups_per_sweep(sweep, db_path):
-    con = db.persistent_connection_to_db(db_path)
-    con.row_factory = sqlite3.Row
-    data = con.execute(
-        """SELECT
-        peaks.peak_index,
-        peaks.fname,
+DB_QUERY_STRING = """SELECT
+        peaks2.peak_index,
+        peaks2.fname,
         metadata.mouse_id,
         metadata.cell_side,
         metadata.treatment_group,
@@ -22,11 +17,15 @@ def get_groups_per_sweep(sweep, db_path):
         metadata.cell_n,
         metadata.membrane_potential_uncorrected,
         metadata.include
-        FROM peaks INNER JOIN metadata
-        ON peaks.fname = metadata.fname
-        WHERE peaks.sweep = ? AND include = 'yes'""",
-        (sweep,),
-    )
+        FROM peaks2 INNER JOIN metadata
+        ON peaks2.fname = metadata.fname
+        WHERE peaks2.sweep = ? AND metadata.include = 'yes'"""
+
+
+def get_groups_per_sweep(sweep, query, db_path):
+    con = db.persistent_connection_to_db(db_path)
+    con.row_factory = sqlite3.Row
+    data = con.execute(query, (sweep,))
     extracted = [
         {
             "fname": p["fname"],
@@ -99,8 +98,9 @@ def write_json(data, path):
 
 
 for sweep in range(23):
-    p = f"/Users/nick/Dropbox/lab_notebook/projects_and_data/mnc/analysis_and_data/patch_clamp/data/summary_data/spiking_201912-202001/spike_times_sweep_{sweep}.json"
-    sweepdata = get_groups_per_sweep(sweep, db.DATABASE_PATH)
+    p = f"/Users/nick/Dropbox/lab_notebook/projects_and_data/mnc/analysis_and_data/patch_clamp/data/summary_data/spiking_201912-202001/spike_times_sweep_{sweep}_higher_threshold.json"
+    sweepdata = get_groups_per_sweep(sweep, DB_QUERY_STRING, db.DATABASE_PATH)
     serialized = [serialize(add_real_x(d)) for d in sweepdata]
     serialized_flat = [item for sublist in serialized for item in sublist]
     write_json(serialized_flat, p)
+    print(f"wrote {p}")

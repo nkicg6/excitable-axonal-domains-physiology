@@ -8,7 +8,7 @@ cur.close()
 con.close()
 
 
-QUERY_STRING = "INSERT INTO peaks (fname, fpath, sweep, peak_index) VALUES (:name, :path, :sweep, :peaks) ON CONFLICT DO NOTHING"
+QUERY_STRING = "INSERT INTO peaks2 (fname, fpath, sweep, peak_index) VALUES (:name, :path, :sweep, :peaks) ON CONFLICT DO NOTHING"
 paths = db.get_paths_for_protocol(db.DATABASE_PATH, "cc_01-steps")
 HALF_MS_WINDOW = 11
 DEGREE = 3
