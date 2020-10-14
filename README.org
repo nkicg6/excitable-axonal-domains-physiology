@@ -33,7 +33,16 @@ Manual writing an =exclude.json=
   - Ensure the query string constant is correct /and/ ensure the file path for write out is correct.
   - The current set will end with =_higher_threhsold.json=.
 - *(TODO)* Next step is to read it into R for further analysis.
-
+** R analysis steps for spikes
+*** DONE map sweeps to current steps
+    CLOSED: [2020-10-14 Wed 14:24]
+*** TODO add to database table
+*** TODO add spike summary to DB
+*** TODO compare half max current and max current step freq
+*** TODO glm 
+=spike ~ current+side*treatment= 
+ensure that the side is L/R for all
+*** ISI calculations. need to test this
 
 * utility
 Miscellaneous scripts used for analysis or organization tasks

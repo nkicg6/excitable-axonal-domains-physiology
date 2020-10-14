@@ -21,6 +21,21 @@ DB_QUERY_STRING = """SELECT
         ON peaks2.fname = metadata.fname
         WHERE peaks2.sweep = ? AND metadata.include = 'yes'"""
 
+DB_QUERY_STRING_MAYBE = """SELECT
+        peaks2.peak_index,
+        peaks2.fname,
+        metadata.mouse_id,
+        metadata.cell_side,
+        metadata.treatment_group,
+        metadata.fpath,
+        metadata.protocol,
+        metadata.cell_n,
+        metadata.membrane_potential_uncorrected,
+        metadata.include
+        FROM peaks2 INNER JOIN metadata
+        ON peaks2.fname = metadata.fname
+        WHERE peaks2.sweep = ? AND metadata.include = 'maybe'"""
+
 
 def get_groups_per_sweep(sweep, query, db_path):
     con = db.persistent_connection_to_db(db_path)
@@ -98,7 +113,7 @@ def write_json(data, path):
 
 
 for sweep in range(23):
-    p = f"/Users/nick/Dropbox/lab_notebook/projects_and_data/mnc/analysis_and_data/patch_clamp/data/summary_data/spiking_201912-202001/spike_times_sweep_{sweep}_higher_threshold.json"
+    p = f"/Users/nick/Dropbox/lab_notebook/projects_and_data/mnc/analysis_and_data/patch_clamp/data/summary_data/spiking_201912-202001/spike_times_sweep_{sweep}_MAYBE_higher_threshold.json"
     sweepdata = get_groups_per_sweep(sweep, DB_QUERY_STRING, db.DATABASE_PATH)
     serialized = [serialize(add_real_x(d)) for d in sweepdata]
     serialized_flat = [item for sublist in serialized for item in sublist]
