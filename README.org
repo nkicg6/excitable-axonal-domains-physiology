@@ -36,9 +36,9 @@ Manual writing an =exclude.json=
 ** R analysis steps for spikes
 *** DONE map sweeps to current steps
     CLOSED: [2020-10-14 Wed 14:24]
-*** TODO add to database table
-*** TODO add spike summary to DB
-*** TODO compare half max current and max current step freq
+*** DONE add to database table
+    CLOSED: [2020-10-14 Wed 16:47]
+*** In-progress compare half max current and max current step freq
 *** TODO glm 
 =spike ~ current+side*treatment= 
 ensure that the side is L/R for all
