@@ -32,6 +32,7 @@ Manual writing an =exclude.json=
   - Careful, this is a rough file with vars you need to change throughout.
   - Ensure the query string constant is correct /and/ ensure the file path for write out is correct.
   - The current set will end with =_higher_threhsold.json=.
+- =membrane_potential.py= measures the mean membrane potential for the first ~0.5s of the file to get a baseline for possible exclusion of files later. 
 - *(TODO)* Next step is to read it into R for further analysis.
 ** R analysis steps for spikes
 *** DONE map sweeps to current steps
