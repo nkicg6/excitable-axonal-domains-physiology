@@ -48,4 +48,3 @@ ensure that the side is L/R for all
 * utility
 Miscellaneous scripts used for analysis or organization tasks
 ** Table of contents
-
