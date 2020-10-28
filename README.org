@@ -9,6 +9,18 @@
 #+ARCHIVE: daily_archive.org::datetree/* From master todo
 
 Analysis and utility code used for thesis project. 
+* Staying Organized
+
+Preventing spaghetti code and remembering how things are done is of utmost importance. It is amazing how quickly I forget how some analysis was done, or what files were included. 
+We use scripting languages to perform serious data analysis, and we have the benefit of reproducible research (ability to re-run the analysis and get the same result). However, this benefit is only automatic for simple scripts. Often I am re-running an analysis with different parameters, or different input files, and this often leads to copying the main script file with new hard-coded inputs, or commenting and re-assigning global input variables. Which analysis led to which output? Which is most recent? What exactly were the input files? 
+I've only been working on this project for a month and I am already facing this issue. I am trying to stay consistent, so I am adopting the following method going forward:
+
+1. Analysis is developed using *_scratch files.
+2. Once I have it worked out, the library functions go in a file under =patch_clamp= or =lfp= and I write a batch function that lives in =scripts/=.
+3. The batch file will take command line inputs. So a path list, and any parameters.
+4. Batch files will then be run with shell scripts. 
+
+The idea is that batches can be re-run with different parameters using a shell script, which documents exactly what was done, what the outputs were, and allows it to be re-run.
 
 * LFP
 - analysis routines for LFP extracellular recording analysis.
@@ -22,6 +34,9 @@ Analysis and utility code used for thesis project.
 Manual writing an =exclude.json=
 
 * patch_clamp
+** spikes analysis
+- I am re-running this analysis using the methods described under [[Staying Organized]]
+- =spikes.sh= will be the main driver. 
 ** steps for spikes
 - =count_steps.py= iterates through all paths and all sweeps, recording all the peaks in the database. 
 - This script can be run from the =patch= virtual environment, from the =ephys= directory using:
