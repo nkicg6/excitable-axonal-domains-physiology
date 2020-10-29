@@ -10,20 +10,24 @@ paths = db.get_paths_for_protocol(db.DATABASE_PATH, "cc_01-steps")
 
 parser = argparse.ArgumentParser(description="count spikes and record indicies")
 parser.add_argument("-db", help="database path")
-parser.add_argument("-window", help="Half ms window for filter")
-parser.add_argument("-degree", help="Degree for filter")
+parser.add_argument("-window", help="Half ms window for filter", type=int)
+parser.add_argument("-degree", help="Degree for filter", type=int)
 parser.add_argument("-query", help="generic string for DB insertion")
+parser.add_argument("-threshold", help="stimulus threshold", type=float)
 
 if __name__ == "__main__":
+    print("[count_steps] Starting")
     args = parser.parse_args()
     HALF_MS_WINDOW = args.window
     DEGREE = args.degree
     THRESHOLD = args.threshold
     DB_PATH = args.db
     QUERY = args.query
+
     if not os.path.exists(DB_PATH):
         sys.exit(f"database {DB_PATH} doesn't exist. Exiting")
     PATHS = db.get_paths_for_protocol(DB_PATH, "cc_01-steps")
+    print(f"paths: {PATHS}")
 
     for path in PATHS:
         print(f">>>> analyzing {path}\n\n")

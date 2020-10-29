@@ -11,7 +11,7 @@ QUERY_STRING="INSERT INTO peaks (fname, fpath, sweep, peak_index) VALUES (:name,
 # main script, first make DB and table
 
 python scripts/mk_table.py -db $DB_PATH -schema $DB_SCHEMA_PATH
-python scripts/count_steps.py -db $DB_PATH -window $HALF_MS_WINDOW -degree $DEGREE -threshold $THRESHOLD -query $QUERY_STRING
+python scripts/count_steps.py -db $DB_PATH -window $HALF_MS_WINDOW -degree $DEGREE -threshold $THRESHOLD -query "$QUERY_STRING"
 
 echo "done"
 
