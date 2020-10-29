@@ -42,20 +42,27 @@ Manual writing an =exclude.json=
 
 * patch_clamp
 ** spikes analysis
-- I am re-running this analysis using the methods described under [[Staying Organized]]
-- =spikes.sh= will be the main driver. 
-** steps for spikes
-- =count_steps.py= iterates through all paths and all sweeps, recording all the peaks in the database. 
-- This script can be run from the =patch= virtual environment, from the =ephys= directory using:
-  =python patch_clamp/count_steps.py=
-  - Careful, the query string is specific to the database table!
-- For analysis, we will pull those values out of the database and write them to =json= via =serialize_cc01.py=. From the =ephys= directory use:
-  =python patch_clamp/serialize_cc01.py=
-  - Careful, this is a rough file with vars you need to change throughout.
-  - Ensure the query string constant is correct /and/ ensure the file path for write out is correct.
-  - The current set will end with =_higher_threhsold.json=.
-- =membrane_potential.py= measures the mean membrane potential for the first ~0.5s of the file to get a baseline for possible exclusion of files later. 
-- *(TODO)* Next step is to read it into R for further analysis.
+- /I am re-running this analysis using the methods described under [[Staying Organized]]/
+- Most recent run was with git hash: 1b61c2d
+- Database path is =/Users/nick/Dropbox/lab_notebook/projects_and_data/mnc/analysis_and_data/patch_clamp/data/summary_data/spiking_201912-202001/patch_data_batch.db=
+- =update_metadata_db.sh= adds the metadata to the database
+- =spikes.sh= will be the main driver adding the peaks to the database
+*TODO* ADD a new script adding the peak times directly to a database table. this will mean modifying =serialize_cc01.py= to add directly to the database. 
+*TODO* Check it in R. 
+
+*** details for steps spikes analysis
+
+ - =count_steps.py= iterates through all paths and all sweeps, recording all the peaks in the database. 
+ - This script can be run from the =patch= virtual environment, from the =ephys= directory using:
+   =python patch_clamp/count_steps.py=
+   - Careful, the query string is specific to the database table!
+ - For analysis, we will pull those values out of the database and write them to =json= via =serialize_cc01.py=. From the =ephys= directory use:
+   =python patch_clamp/serialize_cc01.py=
+   - Careful, this is a rough file with vars you need to change throughout.
+   - Ensure the query string constant is correct /and/ ensure the file path for write out is correct.
+   - The current set will end with =_higher_threhsold.json=.
+ - =membrane_potential.py= measures the mean membrane potential for the first ~0.5s of the file to get a baseline for possible exclusion of files later. 
+
 ** R analysis steps for spikes
 *** DONE map sweeps to current steps
     CLOSED: [2020-10-14 Wed 14:24]
