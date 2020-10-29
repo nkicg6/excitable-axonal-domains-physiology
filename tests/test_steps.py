@@ -1,5 +1,5 @@
-from ephys.patch_clamp import utils
-from ephys.patch_clamp import steps
+from patch_clamp import utils
+from patch_clamp import steps
 
 
 def test_read_abf_IO(good_path_and_map):
@@ -20,10 +20,7 @@ def test_bad_read_abf_IO(bad_path_and_map):
     assert sbad["channel"] == 0
     assert sbad["short_name"] == bad_map["short_name"]
     assert len(sbad["x"]) == len(bad_map["x"])
-    assert (
-        sbad["error"][0]
-        == "io error: ABF file does not exist: /Users/nick/personal_projects/thesis/thesis_ephys/not/real/thing.abf"
-    )
+    assert sbad["error"][0].split(":")[0] == "io error"
 
 
 def test_golay(good_path_and_map):

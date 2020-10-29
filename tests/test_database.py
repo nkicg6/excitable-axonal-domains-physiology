@@ -1,5 +1,5 @@
 import pytest
-from ephys.patch_clamp import database
+from patch_clamp import database
 
 
 def test_list_of_ints_to_str():
