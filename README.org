@@ -22,6 +22,13 @@ I've only been working on this project for a month and I am already facing this 
 
 The idea is that batches can be re-run with different parameters using a shell script, which documents exactly what was done, what the outputs were, and allows it to be re-run.
 
+** Creating new shell scripts
+
+Scripts will be run from =ephys/=, and this becomes the working directory. Ensure you are in the =patch= virtualenv before you run a script. Write the shell script, then run =chmod +x <script-name>= to make executable. 
+
+Scripts can then be run via =shell/<script-name.sh>=
+
+
 * LFP
 - analysis routines for LFP extracellular recording analysis.
 ** script design
