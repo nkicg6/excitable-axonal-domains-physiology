@@ -7,7 +7,7 @@ import pyabf
 
 @pytest.fixture()
 def good_path_and_map():
-    path = str(pathlib.Path("..", "data", "abfs", "20104002.abf").resolve())
+    path = str(pathlib.Path("data", "abfs", "20104002.abf").resolve())
     abf = pyabf.ABF(path)
     abf.setSweep(sweepNumber=1, channel=0)
     good = {
@@ -24,7 +24,7 @@ def good_path_and_map():
 
 @pytest.fixture()
 def bad_path_and_map():
-    path = str(pathlib.Path("..", "not", "real", "thing.abf"))
+    path = str(pathlib.Path("not", "real", "thing.abf"))
     bad = {
         "path": path,
         "sweep": 1,
