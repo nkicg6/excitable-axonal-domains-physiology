@@ -53,30 +53,32 @@ def serialize(item):
         out.append(
             {
                 "fname": item["fname"],
-                "peak_time": float(spike),
+                "fpath": item["fpath"],
                 "mouse_id": item["mouse_id"],
                 "cell_side": item["cell_side"],
                 "cell_n": item["cell_n"],
-                "memb_potential": item["memb_potential"],
+                "membrane_potential": item["memb_potential"],
                 "include": item["include"],
                 "protocol": item["protocol"],
                 "treatment": item["treatment"],
                 "sweep": item["sweep"],
+                "peak_time": float(spike),
             }
         )
     if not out:
         return [
             {
                 "fname": item["fname"],
-                "peak_time": None,
+                "fpath": item["fpath"],
                 "mouse_id": item["mouse_id"],
                 "cell_side": item["cell_side"],
                 "cell_n": item["cell_n"],
-                "memb_potential": item["memb_potential"],
+                "membrane_potential": item["memb_potential"],
                 "include": item["include"],
                 "protocol": item["protocol"],
                 "treatment": item["treatment"],
                 "sweep": item["sweep"],
+                "peak_time": None,
             }
         ]
     return out

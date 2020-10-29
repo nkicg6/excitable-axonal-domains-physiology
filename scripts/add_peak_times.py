@@ -5,7 +5,7 @@ parser = argparse.ArgumentParser(description="add peak times to the database")
 parser.add_argument("-query", help="Insert query for database")
 parser.add_argument("-sweeps", help="Max sweeps", type=int)
 parser.add_argument("-db", help="Database path")
-
+parser.add_argument("-include", help="`yes` or `maybe` for database include")
 
 if __name__ == "__main__":
 
@@ -13,6 +13,7 @@ if __name__ == "__main__":
     SWEEP_MAX = args.sweeps
     QUERY = args.query
     DB_PATH = args.db
+    INCLUDE = args.include
 
     for sweep in range(23):
         sweepdata = pt.get_groups_per_sweep(sweep, DB_QUERY_STRING, db.DATABASE_PATH)
