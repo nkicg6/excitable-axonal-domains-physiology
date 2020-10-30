@@ -1,6 +1,0 @@
-CREATE TABLE peaks_recount
-
-(fname TEXT NOT NULL,
-fpath TEXT NOT NULL,
-sweep INTEGER NOT NULL,
-peak_index TEXT NOT NULL)
