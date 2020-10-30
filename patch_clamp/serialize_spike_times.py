@@ -7,6 +7,8 @@ import patch_clamp.database as db
 
 
 def get_groups_per_sweep(sweep, query, db_path):
+    """pulls out all the data in a sweep and structures it as a dict.
+    String of integers (`peaks`) is transformed into a list of ints or empty list."""
     con = db.persistent_connection_to_db(db_path)
     con.row_factory = sqlite3.Row
     data = con.execute(query, (sweep,))
@@ -20,8 +22,7 @@ def get_groups_per_sweep(sweep, query, db_path):
             "memb_potential": p["membrane_potential_uncorrected"],
             "include": p["include"],
             "protocol": p["protocol"],
-            "peaks": p["peak_index"],
-            "side": p["cell_side"],
+            "peaks": db.str_list_to_list_ints(p["peak_index"]),
             "treatment": p["treatment_group"],
             "sweep": sweep,
         }
@@ -32,6 +33,7 @@ def get_groups_per_sweep(sweep, query, db_path):
 
 
 def get_x(item):
+    """adds the x (time) array for the sweep"""
     abf = pyabf.ABF(item["fpath"])
     abf.setSweep(item["sweep"])
     time = abf.sweepX
@@ -39,17 +41,10 @@ def get_x(item):
     return item
 
 
-def add_real_x(item):
-    """fn to map over list of items returned by `get_groups_per_sweep`"""
-    i_res = item.copy()
-    peak_ints = db.str_list_to_list_ints(item["peaks"])
-    i_res["peak_times"] = i_res["x"][peak_ints]
-    return i_res
-
-
 def serialize(item):
     out = []
-    for spike in item["peak_times"]:
+    for spike_ind in item["peaks"]:
+        spike = item["x"][spike_ind]
         out.append(
             {
                 "fname": item["fname"],
