@@ -10,4 +10,5 @@ include TEXT NOT NULL,
 protocol TEXT NOT NULL,
 treatment TEXT NOT NULL,
 sweep INTEGER NOT NULL,
+current REAL NOT NULL,
 peak_time REAL NULL)

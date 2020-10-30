@@ -87,3 +87,10 @@ def serialize_data_no_peaks():
         "sweep": 5,
     }
     return data
+
+
+@pytest.fixture()
+def peaks_table_schema():
+    with open("sql/peak_times.sqlite", "r") as schema_file:
+        schema = schema_file.read().replace("\n", " ")
+    return schema
