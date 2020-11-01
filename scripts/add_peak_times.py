@@ -31,4 +31,4 @@ if __name__ == "__main__":
                 if args.dry_run:
                     print(item)
                 if not args.dry_run:
-                    s.to_db(DB_PATH, s.PEAK_INS_QUERY)
+                    s.to_db(item, DB_PATH, s.PEAK_INS_QUERY)
