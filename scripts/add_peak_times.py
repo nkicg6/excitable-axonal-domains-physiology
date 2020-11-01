@@ -22,6 +22,7 @@ if __name__ == "__main__":
     INCLUDE = args.include
 
     for sweep in range(SWEEP_MAX):
+        print(f"[INFO] Working on sweep {sweep}...")
         sweepdata = s.get_groups_per_sweep(sweep, INCLUDE, QUERY, DB_PATH)
         all_d = map(s.get_x, sweepdata)
         for f in all_d:
