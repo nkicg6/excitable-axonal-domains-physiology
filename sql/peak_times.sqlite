@@ -11,4 +11,6 @@ protocol TEXT NOT NULL,
 treatment TEXT NOT NULL,
 sweep INTEGER NOT NULL,
 current REAL NOT NULL,
-peak_time REAL NULL)
+peak_time REAL NULL,
+UNIQUE (fname, fpath, mouse_id, cell_side, cell_n, treatment, sweep, current, peak_time))
+

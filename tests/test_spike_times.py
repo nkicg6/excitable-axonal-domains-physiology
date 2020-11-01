@@ -46,4 +46,4 @@ def test_to_db_double_peaks(serialize_data_duplicate_peaks, spike_times_db):
         s.to_db(current, db_path, s.PEAK_INS_QUERY)
     check_con = sqlite3.connect(db_path)
     check_stuff = check_con.execute("SELECT peak_time FROM peak_times").fetchall()
-    assert check_stuff == [()]
+    assert check_stuff == [(2.0,)]
