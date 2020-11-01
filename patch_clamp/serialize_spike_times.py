@@ -5,6 +5,11 @@ import pyabf
 
 import patch_clamp.database as db
 
+PEAK_INS_QUERY = """INSERT INTO peak_times
+                    VALUES (:fname, :fpath, :mouse_id, :cell_side, :cell_n,
+                            :membrane_potential, :include, :protocol,
+                            :treatment, :sweep, :current, :peak_time)"""
+
 SWEEP_TO_CURRENT_MAP = {
     0: -0.05,
     1: -0.025,
@@ -105,34 +110,13 @@ def serialize(item):
     return out
 
 
-def add_current(item, CURRENT_MAP):
+def add_current(item):
     try:
-        item["current"] = CURRENT_MAP[item["sweep"]]
+        item["current"] = SWEEP_TO_CURRENT_MAP[item["sweep"]]
     except TypeError:
         print(f"type sweep: {type(item['sweep'])}")
         print(f"val sweep: {item['sweep']}")
     return item
-
-
-# playing around
-
-DB_QUERY = """SELECT peaks.peak_index,
-                 peaks.fname,
-                 metadata.mouse_id,
-                 metadata.cell_side,
-                 metadata.treatment_group,
-                 metadata.fpath,
-                 metadata.protocol,
-                 metadata.cell_n,
-                 metadata.membrane_potential_uncorrected,
-                 metadata.include
-                 FROM peaks INNER JOIN metadata
-                 ON peaks.fname = metadata.fname
-                 WHERE peaks.sweep = ? AND metadata.include = ?"""
-
-DB_PATH = "/Users/nick/Dropbox/lab_notebook/projects_and_data/mnc/analysis_and_data/patch_clamp/data/summary_data/spiking_201912-202001/patch_data_batch.db"
-
-PEAK_INS_QUERY = "INSERT INTO peak_times VALUES (:fname, :fpath, :mouse_id, :cell_side, :cell_n, :membrane_potential, :include, :protocol, :treatment, :sweep, :current, :peak_time)"
 
 
 def to_db(dict_item, db, query):
@@ -147,28 +131,3 @@ def to_db(dict_item, db, query):
         print(f"Query is {query}")
     finally:
         con.close()
-
-
-# looks good. this would be for sweep in range(23):
-res = get_groups_per_sweep(4, "yes", DB_QUERY, DB_PATH)  # all the data for a sweep
-alld = map(get_x, res)
-all_data = []
-for thing in alld:
-    sm = serialize(thing)
-    # instead of adding to the list, iterate and add it directly to the db
-    all_data = all_data + sm
-
-
-for item in sm:
-    s = add_current(item, SWEEP_TO_CURRENT_MAP)
-
-con = sqlite3.connect(":memory:")
-
-with open("sql/peak_times.sqlite", "r") as schema:
-    scheme = schema.read().replace("\n", " ")
-
-con.execute(scheme)
-
-con.execute(PEAK_INS_QUERY, s)
-stuff = con.execute("SELECT * FROM peak_times")
-print(stuff.fetchall())

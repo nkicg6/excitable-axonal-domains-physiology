@@ -19,8 +19,9 @@ SWEEP_MAX=23
 python scripts/mk_table.py -db $DB_PATH -schema $DB_SCHEMA_PATH
 
 # run script once for yes once for maybe
+
 echo "Running yes option"
-# python scripts/add_peak_times.py -db $DB_PATH -query "$DB_QUERY" -sweeps $SWEEP_MAX -include "yes"
+python scripts/add_peak_times.py -db $DB_PATH -query "$DB_QUERY" -sweeps $SWEEP_MAX -include "yes"
 echo "Running maybe option"
-# python scripts/add_peak_times.py -db $DB_PATH -query "$DB_QUERY" -sweeps $SWEEP_MAX -include "maybe"
-echo "Done"
+python scripts/add_peak_times.py -db $DB_PATH -query "$DB_QUERY" -sweeps $SWEEP_MAX -include "maybe"
+echo "Done!"
