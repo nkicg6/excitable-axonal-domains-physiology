@@ -20,7 +20,7 @@ def test_to_db_no_peaks(peaks_table_schema, serialize_data_no_peaks, spike_times
     db_path = spike_times_db
     val = s.serialize(serialize_data_no_peaks)
     for info in val:
-        current = s.add_current(info, s.SWEEP_TO_CURRENT_MAP)
+        current = s.add_current(info)
         s.to_db(current, db_path, s.PEAK_INS_QUERY)
     check_con = sqlite3.connect(db_path)
     check_stuff = check_con.execute("SELECT peak_time FROM peak_times").fetchall()
@@ -31,7 +31,7 @@ def test_to_db_peaks(peaks_table_schema, serialize_data_with_peaks, spike_times_
     db_path = spike_times_db
     val = s.serialize(serialize_data_with_peaks)
     for info in val:
-        current = s.add_current(info, s.SWEEP_TO_CURRENT_MAP)
+        current = s.add_current(info)
         s.to_db(current, db_path, s.PEAK_INS_QUERY)
     check_con = sqlite3.connect(db_path)
     check_stuff = check_con.execute("SELECT peak_time FROM peak_times").fetchall()
@@ -42,7 +42,7 @@ def test_to_db_double_peaks(serialize_data_duplicate_peaks, spike_times_db):
     db_path = spike_times_db
     val = s.serialize(serialize_data_duplicate_peaks)
     for info in val:
-        current = s.add_current(info, s.SWEEP_TO_CURRENT_MAP)
+        current = s.add_current(info)
         s.to_db(current, db_path, s.PEAK_INS_QUERY)
     check_con = sqlite3.connect(db_path)
     check_stuff = check_con.execute("SELECT peak_time FROM peak_times").fetchall()
@@ -56,7 +56,7 @@ def test_to_db_double_peaks_different_files(
     for files in serialize_data_duplicate_peaks_diff_files:
         val = s.serialize(files)
         for info in val:
-            current = s.add_current(info, s.SWEEP_TO_CURRENT_MAP)
+            current = s.add_current(info)
             s.to_db(current, db_path, s.PEAK_INS_QUERY)
     check_con = sqlite3.connect(db_path)
     check_stuff = check_con.execute("SELECT peak_time FROM peak_times").fetchall()

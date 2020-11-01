@@ -1,6 +1,8 @@
 # add peak times to database table
 DB_SCHEMA_PATH="/Users/nick/personal_projects/thesis/thesis_ephys/ephys/sql/peak_times.sqlite"
+
 DB_PATH="/Users/nick/Dropbox/lab_notebook/projects_and_data/mnc/analysis_and_data/patch_clamp/data/summary_data/spiking_201912-202001/patch_data_batch.db"
+
 DB_QUERY="SELECT peaks.peak_index, 
                  peaks.fname, 
                  metadata.mouse_id, 
