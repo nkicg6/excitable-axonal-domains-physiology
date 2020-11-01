@@ -5,8 +5,7 @@ import patch_clamp.database as db
 
 
 def test_serialize(serialize_data_with_peaks):
-    data, _ = serialize_data_with_peaks
-    val = s.serialize(data)
+    val = s.serialize(serialize_data_with_peaks)
     vals = [i["peak_time"] for i in val]
     assert vals == [3.0, 5.0, 7.0]
 
@@ -21,9 +20,30 @@ def test_to_db_no_peaks(peaks_table_schema, serialize_data_no_peaks, spike_times
     db_path = spike_times_db
     val = s.serialize(serialize_data_no_peaks)
     for info in val:
-        with_current = s.add_current(info, s.SWEEP_TO_CURRENT_MAP)
-        print(with_current)
-        s.to_db(with_current, db_path, s.PEAK_INS_QUERY)
+        current = s.add_current(info, s.SWEEP_TO_CURRENT_MAP)
+        s.to_db(current, db_path, s.PEAK_INS_QUERY)
     check_con = sqlite3.connect(db_path)
-    check_stuff = check_con.execute("SELECT * FROM peak_times").fetchall()
+    check_stuff = check_con.execute("SELECT peak_time FROM peak_times").fetchall()
+    assert check_stuff == [(None,)]
+
+
+def test_to_db_peaks(peaks_table_schema, serialize_data_with_peaks, spike_times_db):
+    db_path = spike_times_db
+    val = s.serialize(serialize_data_with_peaks)
+    for info in val:
+        current = s.add_current(info, s.SWEEP_TO_CURRENT_MAP)
+        s.to_db(current, db_path, s.PEAK_INS_QUERY)
+    check_con = sqlite3.connect(db_path)
+    check_stuff = check_con.execute("SELECT peak_time FROM peak_times").fetchall()
+    assert check_stuff == [(3.0,), (5.0,), (7.0,)]
+
+
+def test_to_db_double_peaks(serialize_data_duplicate_peaks, spike_times_db):
+    db_path = spike_times_db
+    val = s.serialize(serialize_data_duplicate_peaks)
+    for info in val:
+        current = s.add_current(info, s.SWEEP_TO_CURRENT_MAP)
+        s.to_db(current, db_path, s.PEAK_INS_QUERY)
+    check_con = sqlite3.connect(db_path)
+    check_stuff = check_con.execute("SELECT peak_time FROM peak_times").fetchall()
     assert check_stuff == [()]

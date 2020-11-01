@@ -43,7 +43,7 @@ def bad_path_and_map():
 def serialize_data_with_peaks():
     data1 = {
         "fname": "20104002",
-        "fpath": "/Users/nick/personal_projects/thesis/thesis_ephys/ephys/data/abfs/20104002.abf",
+        "fpath": "abfs/20104002.abf",
         "mouse_id": "mid-none",
         "cell_side": "left",
         "cell_n": 2,
@@ -55,28 +55,14 @@ def serialize_data_with_peaks():
         "treatment": "occl",
         "sweep": 5,
     }
-    data2 = {
-        "fname": "20104003",
-        "fpath": "/Users/nick/personal_projects/thesis/thesis_ephys/ephys/data/abfs/20104003.abf",
-        "mouse_id": "mid-none",
-        "cell_side": "right",
-        "cell_n": 2,
-        "memb_potential": -65.4,
-        "include": "yes",
-        "protocol": "cc-01_steps",
-        "peaks": [1, 2, 6],
-        "x": [1, 2, 3, 4, 5, 6, 7, 8],
-        "treatment": "occl",
-        "sweep": 5,
-    }
-    return data1, data2
+    return data1
 
 
 @pytest.fixture()
 def serialize_data_no_peaks():
     data = {
         "fname": "20104005",
-        "fpath": "/Users/nick/personal_projects/thesis/thesis_ephys/ephys/data/abfs/20104005.abf",
+        "fpath": "abfs/20104005.abf",
         "mouse_id": "mid-none",
         "cell_side": "right",
         "cell_n": 2,
@@ -84,6 +70,25 @@ def serialize_data_no_peaks():
         "include": "yes",
         "protocol": "cc-01_steps",
         "peaks": [],
+        "x": [1, 2, 3, 4, 5, 6, 7, 8],
+        "treatment": "occl",
+        "sweep": 5,
+    }
+    return data
+
+
+@pytest.fixture()
+def serialize_data_duplicate_peaks():
+    data = {
+        "fname": "20104005",
+        "fpath": "abfs/20104005.abf",
+        "mouse_id": "mid-none",
+        "cell_side": "right",
+        "cell_n": 2,
+        "memb_potential": -65.4,
+        "include": "yes",
+        "protocol": "cc-01_steps",
+        "peaks": [1, 1],
         "x": [1, 2, 3, 4, 5, 6, 7, 8],
         "treatment": "occl",
         "sweep": 5,
