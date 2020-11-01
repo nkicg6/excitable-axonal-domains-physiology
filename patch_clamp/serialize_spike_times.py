@@ -114,11 +114,6 @@ def add_current(item, CURRENT_MAP):
     return item
 
 
-def to_db(item, query):
-    # I think you can add a dict directly in
-    pass
-
-
 # playing around
 
 DB_QUERY = """SELECT peaks.peak_index,
@@ -145,11 +140,13 @@ def to_db(dict_item, db, query):
     try:
         con = sqlite3.connect(db)
         con.execute(query, dict_item)
+        con.commit()
     except Exception as e:
         print(f"Exception adding dict to database. Exception is {e}\n.")
         print(f"Dict is {dict_item}")
         print(f"Query is {query}")
-    return
+    finally:
+        con.close()
 
 
 # looks good. this would be for sweep in range(23):

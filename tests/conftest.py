@@ -1,4 +1,6 @@
+import os
 import pathlib
+import sqlite3
 import pytest
 import numpy as np
 
@@ -94,3 +96,16 @@ def peaks_table_schema():
     with open("sql/peak_times.sqlite", "r") as schema_file:
         schema = schema_file.read().replace("\n", " ")
     return schema
+
+
+@pytest.fixture()
+def spike_times_db(tmpdir):
+    db = str(tmpdir / "test_spikes.db")
+    # setup db for testing spike_times insertions
+    with open("sql/peak_times.sqlite", "r") as schema_f:
+        schema = schema_f.read().replace("\n", " ")
+    con = sqlite3.connect(db)
+    con.execute(schema)
+    yield db
+    con.close()
+    os.remove(db)
