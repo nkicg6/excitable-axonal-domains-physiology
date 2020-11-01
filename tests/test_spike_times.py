@@ -47,3 +47,17 @@ def test_to_db_double_peaks(serialize_data_duplicate_peaks, spike_times_db):
     check_con = sqlite3.connect(db_path)
     check_stuff = check_con.execute("SELECT peak_time FROM peak_times").fetchall()
     assert check_stuff == [(2.0,)]
+
+
+def test_to_db_double_peaks_different_files(
+    serialize_data_duplicate_peaks_diff_files, spike_times_db
+):
+    db_path = spike_times_db
+    for files in serialize_data_duplicate_peaks_diff_files:
+        val = s.serialize(files)
+        for info in val:
+            current = s.add_current(info, s.SWEEP_TO_CURRENT_MAP)
+            s.to_db(current, db_path, s.PEAK_INS_QUERY)
+    check_con = sqlite3.connect(db_path)
+    check_stuff = check_con.execute("SELECT peak_time FROM peak_times").fetchall()
+    assert check_stuff == [(2.0,), (3.0,), (2.0,), (3.0,)]

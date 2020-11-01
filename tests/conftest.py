@@ -97,6 +97,39 @@ def serialize_data_duplicate_peaks():
 
 
 @pytest.fixture()
+def serialize_data_duplicate_peaks_diff_files():
+    data = {
+        "fname": "20104005",
+        "fpath": "abfs/20104005.abf",
+        "mouse_id": "mid-none",
+        "cell_side": "right",
+        "cell_n": 2,
+        "memb_potential": -65.4,
+        "include": "yes",
+        "protocol": "cc-01_steps",
+        "peaks": [1, 2],
+        "x": [1, 2, 3, 4, 5, 6, 7, 8],
+        "treatment": "occl",
+        "sweep": 5,
+    }
+    data2 = {
+        "fname": "20104006",
+        "fpath": "abfs/20104006.abf",
+        "mouse_id": "mid-none",
+        "cell_side": "right",
+        "cell_n": 2,
+        "memb_potential": -65.4,
+        "include": "yes",
+        "protocol": "cc-01_steps",
+        "peaks": [1, 2],
+        "x": [1, 2, 3, 4, 5, 6, 7, 8],
+        "treatment": "occl",
+        "sweep": 5,
+    }
+    return [data, data2]
+
+
+@pytest.fixture()
 def peaks_table_schema():
     with open("sql/peak_times.sqlite", "r") as schema_file:
         schema = schema_file.read().replace("\n", " ")
