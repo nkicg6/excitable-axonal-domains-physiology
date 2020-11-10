@@ -1,6 +1,7 @@
-# add resting potential table
-# RMP is the mean of the first 0.5s of the sweep. Sweep ending index is hard coded into
-# `stop_index` parameter of membrane_potential.py
+# Purpose:
+# measure the RMP for sweep 0 from each file for cc_01-steps protocol.
+# RMP is the mean of the first 0.5s of the sweep. Sweep ending index is hard coded in
+# the `stop_index` parameter of membrane_potential.py
 
 import argparse
 import os
@@ -35,5 +36,8 @@ if __name__ == "__main__":
         current_d = mp.read_and_filter(path, WINDOW, DEGREE)
         abf_file = mp.get_mean_prestim(current_d)  # use default stop index
         print(">>>> Adding to database")
-        db.add_to_db_parameterized(DB_PATH, QUERY, abf_file)
+        try:
+            db.add_to_db_parameterized(DB_PATH, QUERY, abf_file)
+        except Exception as e:
+            sys.exit(f"Problem adding to database, quitting. Exception: {e}")
     print("Done")

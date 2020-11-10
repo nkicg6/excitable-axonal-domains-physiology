@@ -3,7 +3,7 @@ import numpy as np
 import patch_clamp.utils as utils
 
 # Purpose:
-# measure the RMP for sweep 0 from each file for cc_01-steps protocol and add it to a
+
 # simple database table with columns fname, fpath, sweep, measured_rmp
 
 
