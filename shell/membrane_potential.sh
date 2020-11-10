@@ -10,5 +10,5 @@ echo "Making table"
 python scripts/mk_table.py -db $DB_PATH -schema $TABLE_SCHEMA_PATH
 
 # membrane potential...
-python scripts/add_resting_potential.py -db $DB_PATH -window $HALF_MS_WINDOW -degree $DEGREE -query $DB_QUERY
+python scripts/add_resting_potential.py -db $DB_PATH -window $HALF_MS_WINDOW -degree $DEGREE -query "$DB_QUERY"
 echo "Done!"
