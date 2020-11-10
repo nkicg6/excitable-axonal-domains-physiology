@@ -8,12 +8,6 @@ import patch_clamp.utils as utils
 # simple database table with columns fname, fpath, sweep, measured_rmp
 # RMP is the mean of the first 0.5s of the sweep.
 
-TABLE = """CREATE TABLE RMP_CC01 (fname TEXT NOT NULL UNIQUE,
-                             fpath TEXT NOT NULL,
-                             sweep INTEGER NOT NULL,
-                             measured_rmp REAL NOT NULL)"""
-
-QUERY = "INSERT INTO RMP_CC01 (fname, fpath, sweep, measured_rmp) VALUES (:short_name, :path, :sweep, :mean_rmp)"
 con = db.persistent_connection_to_db(db.DATABASE_PATH)
 con.execute(TABLE)
 

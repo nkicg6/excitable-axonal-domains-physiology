@@ -1,4 +1,5 @@
 CREATE TABLE RMP_CC01 (fname TEXT NOT NULL,
                        fpath TEXT NOT NULL,
                        sweep INTEGER NOT NULL,
-                       measured_rmp REAL NOT NULL)
+                       measured_mean_rmp REAL NOT NULL,
+                       measured_median_rmp REAL NOT NULL)
