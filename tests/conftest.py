@@ -147,3 +147,33 @@ def spike_times_db(tmpdir):
     yield db
     con.close()
     os.remove(db)
+
+
+@pytest.fixture()
+def simple_inserts():
+    d1 = {
+        "fname": "19d29005",
+        "fpath": "/Users/nick/Dropbox/lab_notebook/projects_and_data/mnc/analysis_and_data/patch_clamp/data/passive_membrane_properties_2019-12-29/19d29005.abf",
+        "sweep": 10,
+        "peak_index": "10",
+    }
+    d2 = {
+        "fname": "19d29006",
+        "fpath": "/Users/nick/Dropbox/lab_notebook/projects_and_data/mnc/analysis_and_data/patch_clamp/data/passive_membrane_properties_2019-12-29/19d29006.abf",
+        "sweep": 11,
+        "peak_index": "12",
+    }
+    return [d1, d2]
+
+
+@pytest.fixture()
+def peaks_db(tmpdir):
+    db = str(tmpdir / "test_peaks.db")
+    # setup db for testing
+    with open("sql/peaks_schema.sqlite", "r") as schema_f:
+        schema = schema_f.read().replace("\n", " ")
+    con = sqlite3.connect(db)
+    con.execute(schema)
+    yield db
+    con.close()
+    os.remove(db)
