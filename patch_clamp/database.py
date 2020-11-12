@@ -56,6 +56,21 @@ def get_paths_for_protocol(path_to_db, prot):
         return 1
 
 
+def sql_data_as_dict(path_to_db: str, select_query: str) -> list:
+    """Returns data from an query as a list of dicts."""
+    try:
+        con = sqlite3.connect(path_to_db)
+        con.row_factory = sqlite3.Row
+        things = con.execute(select_query).fetchall()
+        unpacked = [{k: item[k] for k in item.keys()} for item in things]
+        return unpacked
+    except Exception as e:
+        print(f"Failed to execute. Query: {select_query}\n with error:\n{e}")
+        return []
+    finally:
+        con.close()
+
+
 def list_of_ints_to_str(list_of_ints):
     return ",".join([str(i) for i in list_of_ints])
 
