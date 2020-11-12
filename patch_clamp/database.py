@@ -1,7 +1,7 @@
 import sqlite3
 
 
-DATABASE_PATH = "/Users/nick/Dropbox/lab_notebook/projects_and_data/mnc/analysis_and_data/patch_clamp/data/summary_data/spiking_201912-202001/patch_data.db"
+DATABASE_PATH = "/Users/nick/Dropbox/lab_notebook/projects_and_data/mnc/analysis_and_data/patch_clamp/data/summary_data/spiking_201912-202001/patch_data_batch.db"
 
 
 def persistent_connection_to_db(path):
