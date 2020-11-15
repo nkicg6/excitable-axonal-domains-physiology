@@ -30,6 +30,14 @@ Scripts can then be run via =shell/<script-name.sh>=
 
 
 * patch_clamp
+** TODO single ap tasks
+*** Amplitude
+*** AHP
+*** FWHM
+*** write to database
+*** read in R
+*** example figures
+
 ** spikes analysis
 - /I am re-running this analysis using the methods described under [[Staying Organized]]/
 
