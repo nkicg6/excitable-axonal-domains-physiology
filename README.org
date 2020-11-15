@@ -28,15 +28,17 @@ Scripts will be run from =ephys/=, and this becomes the working directory. Ensur
 
 Scripts can then be run via =shell/<script-name.sh>=
 
-
+['fname', 'cell_side', 'cell_n', 'treatment', 'fpath', 'peak_index', 'sweep', 'ap_y', 'ap_x', 'ap_min_index', 'ap_min_voltage', 'ap_max_index', 'ap_max_voltage', 'dydx', 'max_dydx', 'max_dydx_index', 'firing_threshold_voltage', 'firing_threshold_index', 'ap_amplitude', 'AHP_amplitude']
 * patch_clamp
-** TODO single ap tasks
-*** Amplitude
-*** AHP
-*** FWHM
-*** write to database
-*** read in R
-*** example figures
+** In-progress single ap tasks
+*** DONE Amplitude
+    CLOSED: [2020-11-15 Sun 13:16]
+*** DONE AHP
+    CLOSED: [2020-11-15 Sun 15:32]
+*** In-progress FWHM
+*** TODO write to database
+*** TODO read in R
+*** TODO example figures
 
 ** spikes analysis
 - /I am re-running this analysis using the methods described under [[Staying Organized]]/

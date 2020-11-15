@@ -33,11 +33,17 @@ def ap_read_filter_derivative(
         ditem["ap_x"] = []
         ditem["ap_y"] = []
         ditem["dydx"] = []
-        ditem["ap_max_ind"] = []
+        ditem["max_dydx"] = []
+        ditem["max_dydx_index"] = []
+        ditem["ap_max_index"] = []
         ditem["ap_max_voltage"] = []
         ditem["firing_threshold_voltage"] = []
+        ditem["firing_threshold_index"] = []
         ditem["ap_amplitude"] = []
-        return ditem  # if no peak, kick out empty vals early.
+        ditem["ap_min_index"] = []
+        ditem["ap_min_voltage"] = []
+        ditem["AHP_amplitude"] = []
+        return ditem
     abf = pyabf.ABF(ditem["fpath"])
     abf.setSweep(ditem["sweep"])
     y_filtered = s.savgol_filter(abf.sweepY, golay_window_pts, 3)
@@ -48,15 +54,26 @@ def ap_read_filter_derivative(
     ditem["ap_y"] = y_filtered[start:stop]
     ditem["ap_x"] = abf.sweepX[start:stop]
     max_ind = np.where(ditem["ap_y"] == np.max(ditem["ap_y"]))[0]
-    ditem["ap_max_ind"] = max_ind
+    min_ind = np.where(ditem["ap_y"] == np.min(ditem["ap_y"]))[0]
+    ditem["ap_min_index"] = min_ind
+    ditem["ap_min_voltage"] = ditem["ap_y"][min_ind]
+    ditem["ap_max_index"] = max_ind
     ditem["ap_max_voltage"] = ditem["ap_y"][max_ind]
     ditem["dydx"] = (
         np.diff(ditem["ap_y"]) / np.diff(ditem["ap_x"])
     ) / 1000  # to V from mV
-    f_thresh_index = np.where(ditem["dydx"] > threshold)[0]
-    ditem["firing_threshold_voltage"] = ditem["ap_y"][f_thresh_index][0]
+    max_dydx_ind = np.where(ditem["dydx"] == np.max(ditem["dydx"]))[0]
+    max_dydx = ditem["dydx"][max_dydx_ind]
+    ditem["max_dydx"] = max_dydx
+    ditem["max_dydx_index"] = max_dydx_ind
+    f_thresh_index = np.where(ditem["dydx"] > threshold)[0][0]
+    ditem["firing_threshold_voltage"] = ditem["ap_y"][f_thresh_index]
+    ditem["firing_threshold_index"] = f_thresh_index
     ditem["ap_amplitude"] = _distance(
         ditem["ap_max_voltage"], ditem["firing_threshold_voltage"]
+    )
+    ditem["AHP_amplitude"] = _distance(
+        ditem["firing_threshold_voltage"], ditem["ap_min_voltage"]
     )
     return ditem
 
@@ -66,7 +83,75 @@ occl_array = [i for i in ap_items if i["treatment"].lower().strip() == "occl"]
 ctrl_array = [i for i in ap_items if i["treatment"].lower().strip() == "sham"]
 
 
+def plot_ap_features(d):
+    fig = plt.figure(figsize=(10, 6))
+    ax1 = fig.add_subplot(1, 2, 1)
+    ax2 = fig.add_subplot(1, 2, 2)
+    if isinstance(d["ap_y"], list):
+        print("No data")
+        print(f"{d['fname']}-{d['treatment']}-{d['cell_side']}")
+        return fig
+    ax1.plot(d["ap_x"], d["ap_y"])
+    ax1.plot(
+        d["ap_x"][d["firing_threshold_index"]],
+        d["ap_y"][d["firing_threshold_index"]],
+        "r*",
+        label="Threshold",
+    )
+    ax1.plot(
+        d["ap_x"][d["ap_max_index"]],
+        d["ap_y"][d["ap_max_index"]],
+        "y*",
+        label="Max amplitude",
+    )
+
+    ax1.plot(
+        [
+            d["ap_x"][d["firing_threshold_index"]],
+            d["ap_x"][d["firing_threshold_index"]],
+        ],
+        [d["firing_threshold_voltage"], d["ap_max_voltage"]],
+        color="red",
+        label="Max amplitude",
+    )
+    ax1.plot(
+        [d["ap_x"][d["ap_min_index"]], d["ap_x"][d["ap_min_index"]]],
+        [d["ap_min_voltage"], d["firing_threshold_voltage"]],
+        color="green",
+        label="AHP amplitude",
+    )
+
+    ax2.plot(d["ap_y"][:-1], d["dydx"])
+    ax2.plot(
+        d["ap_y"][d["firing_threshold_index"]],
+        d["dydx"][d["firing_threshold_index"]],
+        "r*",
+        label="Threshold",
+    )
+    ax2.plot(
+        d["ap_y"][d["ap_max_index"]],
+        d["dydx"][d["ap_max_index"]],
+        "y*",
+        label="Max amplitude",
+    )
+    ax2.plot(
+        d["ap_y"][d["max_dydx_index"]],
+        d["dydx"][d["max_dydx_index"]],
+        "b*",
+        label="max dydx",
+    )
+    ax2.legend()
+    ax1.legend()
+
+    fig.suptitle(f"{d['fname']}-{d['treatment']}-{d['cell_side']}")
+    return fig
+
+
+f = plot_ap_features(ap_read_filter_derivative(ctrl_array[20], 1, 2, 25))
+plt.show()
+
 ##
+
 occl_example = ap_read_filter_derivative(occl_array[22], 1, 2, 25)
 ctrl_example = ap_read_filter_derivative(ctrl_array[23], 1, 2, 25)
 
