@@ -9,6 +9,7 @@ from patch_clamp import database as db
 QUERY = """SELECT metadata.fname,
            metadata.cell_side,
            metadata.cell_n,
+           metadata.mouse_id,
            metadata.treatment_group AS treatment,
            peaks.fpath,
            peaks.peak_index,

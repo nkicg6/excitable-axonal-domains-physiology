@@ -1,0 +1,13 @@
+CREATE TABLE ap_features
+(fname TEXT NOT NULL,
+fpath TEXT NOT NULL,
+mouse_id TEXT NOT NULL,
+treatment TEXT NOT NULL,
+cell_side TEXT NOT NULL,
+cell_n INTEGER NOT NULL,
+ap_max_voltage REAL,
+max_dydx REAL,
+firing_threshold_voltage REAL,
+ap_amplitude REAL,
+AHP_amplitude REAL,
+FWHM REAL)
