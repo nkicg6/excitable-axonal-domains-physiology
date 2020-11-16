@@ -36,7 +36,8 @@ Scripts can then be run via =shell/<script-name.sh>=
     CLOSED: [2020-11-15 Sun 15:32]
 *** DONE +FWHM+
     CLOSED: [2020-11-15 Sun 17:54]
-*** In-progress write to database
+*** DONE +write to database+
+    CLOSED: [2020-11-15 Sun 22:41]
 *** TODO read in R
 *** TODO example figures
 
@@ -52,7 +53,7 @@ Scripts can then be run via =shell/<script-name.sh>=
 - =membrane_potential.sh= adds resting membrane potential (mean and median) to the database
   - Most recent run was with git hash: a323557
 - =action_potential.sh= adds action potential features to the database
-  - 
+  - Most recent run was with git hash: fdaeb4f
 
 ** R analysis steps for spikes
 *** DONE map sweeps to current steps
