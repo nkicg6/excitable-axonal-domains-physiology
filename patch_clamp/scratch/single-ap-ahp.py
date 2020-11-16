@@ -55,10 +55,12 @@ def ap_read_filter_derivative(
     ditem["ap_x"] = abf.sweepX[start:stop]
     max_ind = np.where(ditem["ap_y"] == np.max(ditem["ap_y"]))[0]
     min_ind = np.where(ditem["ap_y"] == np.min(ditem["ap_y"]))[0]
-    ditem["ap_min_index"] = min_ind
+    ditem["ap_min_index"] = min_ind[0]
     ditem["ap_min_voltage"] = ditem["ap_y"][min_ind]
-    ditem["ap_max_index"] = max_ind
+    ditem["ap_max_index"] = max_ind[0]
     ditem["ap_max_voltage"] = ditem["ap_y"][max_ind]
+    half_max_voltage = ditem["ap_max_voltage"] / 2
+    ditem["half_max_voltage"] = half_max_voltage[0]
     ditem["dydx"] = (
         np.diff(ditem["ap_y"]) / np.diff(ditem["ap_x"])
     ) / 1000  # to V from mV
@@ -71,7 +73,7 @@ def ap_read_filter_derivative(
     ditem["firing_threshold_index"] = f_thresh_index
     ditem["ap_amplitude"] = _distance(
         ditem["ap_max_voltage"], ditem["firing_threshold_voltage"]
-    )
+    )[0]
     ditem["AHP_amplitude"] = _distance(
         ditem["firing_threshold_voltage"], ditem["ap_min_voltage"]
     )
@@ -147,10 +149,30 @@ def plot_ap_features(d):
     return fig
 
 
-f = plot_ap_features(ap_read_filter_derivative(ctrl_array[20], 1, 2, 25))
+ctrl_2 = ap_read_filter_derivative(ctrl_array[20], 1, 2, 25)
+f = plot_ap_features(ctrl_2)
 plt.show()
 
-##
+## FWHM
+
+
+def _fwhm(ditem):
+    half1y = ditem["ap_y"][0 : ditem["ap_max_index"]]
+    half1x = ditem["ap_x"][0 : ditem["ap_max_index"]]
+    half2y = ditem["ap_y"][ditem["ap_max_index"] :]
+    half2x = ditem["ap_x"][ditem["ap_max_index"] :]
+    half_amplitude = ditem["ap_max_voltage"] - (ditem["ap_amplitude"] / 2)
+    distances1 = [_distance(half_amplitude, i) for i in half1y]
+    distances2 = [_distance(half_amplitude, i) for i in half2y]
+    half_max_ind1 = np.where(distances1 == np.min(distances1))[0]
+    half_max_ind2 = np.where(distances2 == np.min(distances2))[0]
+    actual_x_1 = half1x[half_max_ind1]
+    actual_x_2 = half2x[half_max_ind2]
+    ap_x1_index = np.where(ditem["ap_x"] == actual_x_1)[0]
+    ap_x2_index = np.where(ditem["ap_x"] == actual_x_2)[0]
+    WIDTH = actual_x_2 - actual_x_1
+    return ap_x1_index, ap_x2_index, WIDTH
+
 
 occl_example = ap_read_filter_derivative(occl_array[22], 1, 2, 25)
 ctrl_example = ap_read_filter_derivative(ctrl_array[23], 1, 2, 25)
