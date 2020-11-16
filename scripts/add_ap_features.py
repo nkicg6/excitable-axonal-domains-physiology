@@ -17,17 +17,23 @@ parser.add_argument("-threshold", help="derivative threshold for spike", type=in
 
 def main(data):
     for item in data:
-        features = ap.ap_features(
-            item, MS_WINDOW_PRE, MS_WINDOW_POST, THRESHOLD, GOLAY_WINDOW
-        )
-        serialized = ap.serialize_ap_features(features)
-        print(f"[INFO] Adding {serialized['fname']} to database...")
         try:
+            features = ap.ap_features(
+                item, MS_WINDOW_PRE, MS_WINDOW_POST, THRESHOLD, GOLAY_WINDOW
+            )
+            serialized = ap.serialize_ap_features(features)
+            print(f"[INFO] Adding {serialized['fname']} to database...")
+
             db.add_to_db_parameterized(DB_PATH, INSERT_QUERY, serialized)
         except Exception as e:
-            sys.exit(
+            with open("error_log.txt", "a") as er:
+                er.write(
+                    f"[ERROR]: {item['fpath']}\n[EXCEPTION]: {e}\n[EXCEPTION_TEXT]: {e.__traceback__}\n"
+                )
+            print(
                 f"[Warning] Problem adding {serialized['fname']} to database.\n Exception: \n{e}\n"
             )
+            continue
     print("[INFO] Done")
 
 
@@ -43,8 +49,8 @@ if __name__ == "__main__":
 
     # arg list
 
-    for sweep in range(MAX_SWEEP):
-        print("[INFO] Starting sweep {sweep}...")
+    for sweep in range(4, MAX_SWEEP):
+        print(f"[INFO] Starting sweep {sweep}...")
         DATA_QUERY = ap.QUERY.replace("REPLACEME", str(sweep))
         data = [
             ap.peaks_to_int_list(i) for i in db.sql_data_as_dict(DB_PATH, DATA_QUERY)
