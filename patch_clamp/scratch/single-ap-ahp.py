@@ -21,6 +21,24 @@ def _distance(y1, y2):
     return d
 
 
+def _fwhm(d_ap):
+    half1y = d_ap["ap_y"][0 : d_ap["ap_max_index"]]
+    half1x = d_ap["ap_x"][0 : d_ap["ap_max_index"]]
+    half2y = d_ap["ap_y"][d_ap["ap_max_index"] :]
+    half2x = d_ap["ap_x"][d_ap["ap_max_index"] :]
+    half_amplitude = d_ap["ap_max_voltage"] - (d_ap["ap_amplitude"] / 2)
+    distances1 = [_distance(half_amplitude, i) for i in half1y]
+    distances2 = [_distance(half_amplitude, i) for i in half2y]
+    half_max_ind1 = np.where(distances1 == np.min(distances1))[0]
+    half_max_ind2 = np.where(distances2 == np.min(distances2))[0]
+    actual_x_1 = half1x[half_max_ind1]
+    actual_x_2 = half2x[half_max_ind2]
+    ap_x1_index = np.where(d_ap["ap_x"] == actual_x_1)[0]
+    ap_x2_index = np.where(d_ap["ap_x"] == actual_x_2)[0]
+    WIDTH = actual_x_2 - actual_x_1
+    return ap_x1_index, ap_x2_index, WIDTH
+
+
 def ap_read_filter_derivative(
     d, ms_window_pre, ms_window_post, threshold, golay_window_pts=19
 ):
@@ -43,6 +61,9 @@ def ap_read_filter_derivative(
         ditem["ap_min_index"] = []
         ditem["ap_min_voltage"] = []
         ditem["AHP_amplitude"] = []
+        ditem["half_x1_index"] = []
+        ditem["half_x2_index"] = []
+        ditem["fwhm"] = []
         return ditem
     abf = pyabf.ABF(ditem["fpath"])
     abf.setSweep(ditem["sweep"])
@@ -77,6 +98,10 @@ def ap_read_filter_derivative(
     ditem["AHP_amplitude"] = _distance(
         ditem["firing_threshold_voltage"], ditem["ap_min_voltage"]
     )
+    ap_x1_index, ap_x2_index, width = _fwhm(ditem)
+    ditem["half_x1_index"] = ap_x1_index
+    ditem["half_x2_index"] = ap_x2_index
+    ditem["fwhm"] = width
     return ditem
 
 
@@ -105,6 +130,11 @@ def plot_ap_features(d):
         d["ap_y"][d["ap_max_index"]],
         "y*",
         label="Max amplitude",
+    )
+    ax1.plot(
+        [d["ap_x"][d["half_x1_index"]], d["ap_x"][d["half_x2_index"]]],
+        [d["ap_y"][d["half_x1_index"]], d["ap_y"][d["half_x2_index"]]],
+        label="FWHM",
     )
 
     ax1.plot(
@@ -153,58 +183,10 @@ ctrl_2 = ap_read_filter_derivative(ctrl_array[20], 1, 2, 25)
 f = plot_ap_features(ctrl_2)
 plt.show()
 
-## FWHM
+## Look at all
 
-
-def _fwhm(ditem):
-    half1y = ditem["ap_y"][0 : ditem["ap_max_index"]]
-    half1x = ditem["ap_x"][0 : ditem["ap_max_index"]]
-    half2y = ditem["ap_y"][ditem["ap_max_index"] :]
-    half2x = ditem["ap_x"][ditem["ap_max_index"] :]
-    half_amplitude = ditem["ap_max_voltage"] - (ditem["ap_amplitude"] / 2)
-    distances1 = [_distance(half_amplitude, i) for i in half1y]
-    distances2 = [_distance(half_amplitude, i) for i in half2y]
-    half_max_ind1 = np.where(distances1 == np.min(distances1))[0]
-    half_max_ind2 = np.where(distances2 == np.min(distances2))[0]
-    actual_x_1 = half1x[half_max_ind1]
-    actual_x_2 = half2x[half_max_ind2]
-    ap_x1_index = np.where(ditem["ap_x"] == actual_x_1)[0]
-    ap_x2_index = np.where(ditem["ap_x"] == actual_x_2)[0]
-    WIDTH = actual_x_2 - actual_x_1
-    return ap_x1_index, ap_x2_index, WIDTH
-
-
-occl_example = ap_read_filter_derivative(occl_array[22], 1, 2, 25)
-ctrl_example = ap_read_filter_derivative(ctrl_array[23], 1, 2, 25)
-
-single_axis = np.arange(len(occl_example["ap_x"]))
-fig = plt.figure(figsize=(10, 6))
-ax1 = fig.add_subplot(1, 2, 1)
-ax2 = fig.add_subplot(1, 2, 2)
-ax1.plot(single_axis, occl_example["ap_y"], color="red")
-ax1.plot(single_axis, ctrl_example["ap_y"], color="blue")
-ax1.plot(
-    single_axis[occl_example["ap_max_ind"]],
-    occl_example["ap_y"][occl_example["ap_max_ind"]],
-    "y*",
-)
-ax1.plot(
-    single_axis[ctrl_example["ap_max_ind"]],
-    ctrl_example["ap_y"][ctrl_example["ap_max_ind"]],
-    "g*",
-)
-ax2.plot(
-    ctrl_example["ap_y"][:-1],
-    ctrl_example["dydx"],
-    color="blue",
-    label=f"Control-{ctrl_example['cell_side']}",
-)
-ax2.plot(
-    occl_example["ap_y"][:-1],
-    occl_example["dydx"],
-    color="red",
-    label=f"Occluded-{occl_example['cell_side']}",
-)
-ax2.legend()
-ax2.yaxis.tick_right()
-plt.show()
+for item in ap_items:
+    current = ap_read_filter_derivative(item, 1, 2, 25)
+    f = plot_ap_features(current)
+    plt.show()
+    print("NEXT")

@@ -35,8 +35,9 @@ Scripts can then be run via =shell/<script-name.sh>=
     CLOSED: [2020-11-15 Sun 13:16]
 *** DONE AHP
     CLOSED: [2020-11-15 Sun 15:32]
-*** In-progress FWHM
-*** TODO write to database
+*** DONE FWHM
+    CLOSED: [2020-11-15 Sun 17:54]
+*** In-progress write to database
 *** TODO read in R
 *** TODO example figures
 
