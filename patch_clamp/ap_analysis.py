@@ -17,7 +17,7 @@ QUERY = """SELECT metadata.fname,
            peaks.sweep
            FROM peaks INNER JOIN metadata
            ON peaks.fname = metadata.fname
-           WHERE peaks.sweep = 8"""
+           WHERE peaks.sweep = REPLACEME"""
 
 
 def peaks_to_int_list(ditem):
@@ -113,6 +113,33 @@ def ap_features(d, ms_window_pre, ms_window_post, threshold, golay_window_pts=19
     ditem["half_x2_index"] = ap_x2_index
     ditem["fwhm"] = width
     return ditem
+
+
+def serialize_ap_features(apdict):
+    """serialize ap features to add to database"""
+    out = {}
+    out["fname"] = apdict["fname"]
+    out["fpath"] = apdict["fpath"]
+    out["mouse_id"] = apdict["mouse_id"]
+    out["sweep"] = apdict["sweep"]
+    out["treatment"] = apdict["treatment"].lower().strip()
+    out["cell_side"] = apdict["cell_side"].lower().strip()
+    out["cell_n"] = apdict["cell_n"]
+    if not apdict["peak_index"]:
+        out["ap_max_voltage"] = None
+        out["max_dydx"] = None
+        out["firing_threshold_voltage"] = None
+        out["ap_amplitude"] = None
+        out["AHP_amplitude"] = None
+        out["FWHM"] = None
+        return out
+    out["ap_max_voltage"] = float(apdict["ap_max_voltage"][0])
+    out["max_dydx"] = float(apdict["max_dydx"][0])
+    out["firing_threshold_voltage"] = float(apdict["firing_threshold_voltage"])
+    out["ap_amplitude"] = float(apdict["ap_amplitude"])
+    out["AHP_amplitude"] = float(apdict["AHP_amplitude"])
+    out["FWHM"] = float(apdict["fwhm"][0])
+    return out
 
 
 def plot_ap_features(d):
