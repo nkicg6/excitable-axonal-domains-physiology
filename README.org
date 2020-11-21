@@ -38,8 +38,9 @@ Scripts can then be run via =shell/<script-name.sh>=
     CLOSED: [2020-11-15 Sun 17:54]
 *** DONE +write to database+
     CLOSED: [2020-11-15 Sun 22:41]
-*** TODO read in R
-*** TODO example figures
+*** DONE +read in R+
+    CLOSED: [2020-11-16 Mon 09:10]
+*** In-progress example figures
 
 ** spikes analysis
 - /I am re-running this analysis using the methods described under [[Staying Organized]]/

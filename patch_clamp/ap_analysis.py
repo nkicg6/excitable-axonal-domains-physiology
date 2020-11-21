@@ -49,7 +49,7 @@ def _fwhm(d_ap):
     ap_x1_index = np.where(d_ap["ap_x"] == actual_x_1)[0]
     ap_x2_index = np.where(d_ap["ap_x"] == actual_x_2)[0]
     WIDTH = actual_x_2 - actual_x_1
-    return ap_x1_index, ap_x2_index, WIDTH
+    return int(ap_x1_index[0]), int(ap_x2_index[0]), WIDTH
 
 
 def ap_features(d, ms_window_pre, ms_window_post, threshold, golay_window_pts=19):
