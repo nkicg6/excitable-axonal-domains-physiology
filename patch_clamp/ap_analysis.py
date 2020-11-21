@@ -49,7 +49,7 @@ def _fwhm(d_ap):
     ap_x1_index = np.where(d_ap["ap_x"] == actual_x_1)[0]
     ap_x2_index = np.where(d_ap["ap_x"] == actual_x_2)[0]
     WIDTH = actual_x_2 - actual_x_1
-    return int(ap_x1_index[0]), int(ap_x2_index[0]), WIDTH
+    return int(ap_x1_index[0]), int(ap_x2_index[0]), float(WIDTH[0])
 
 
 def ap_features(d, ms_window_pre, ms_window_post, threshold, golay_window_pts=19):
@@ -138,7 +138,7 @@ def serialize_ap_features(apdict):
     out["firing_threshold_voltage"] = float(apdict["firing_threshold_voltage"])
     out["ap_amplitude"] = float(apdict["ap_amplitude"])
     out["AHP_amplitude"] = float(apdict["AHP_amplitude"])
-    out["FWHM"] = float(apdict["fwhm"][0])
+    out["FWHM"] = float(apdict["fwhm"])
     return out
 
 
