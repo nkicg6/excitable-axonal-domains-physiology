@@ -7,7 +7,6 @@ from patch_clamp import ap_analysis as ap
 
 
 db_path = "/Users/nick/Dropbox/lab_notebook/projects_and_data/mnc/analysis_and_data/patch_clamp/data/summary_data/spiking_201912-202001/patch_data_batch.db"
-
 sweep = 8
 
 QUERY2 = ap.QUERY.replace("REPLACEME", str(sweep))
