@@ -1,6 +1,6 @@
 # Code used for PhD project
 
-Analysis code for physiology section of my thesis project
+Analysis code for physiology section of my thesis project. Please note the code and instructions were developed on macOS with a bash shell, Python3.7-3.9, and sqlite3 version `3.24.0`.
 
 # Notes on staying organized
 
