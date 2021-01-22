@@ -4,26 +4,28 @@ Analysis code for physiology section of my thesis project
 
 # Notes on staying organized
 
-Preventing spaghetti code and remembering how things are done is of utmost importance. It is amazing how quickly I forget how some analysis was done, or what files were included. 
+Preventing spaghetti code and remembering how things are done is very important! It is amazing how quickly I forget how some analysis was done, or what files were included. 
 
-We use scripting languages to perform serious data analysis, and we have the benefit of reproducible research (ability to re-run the analysis and get the same result). However, this benefit is only automatic for simple scripts. Often I am re-running an analysis with different parameters, or different input files, and this often leads to copying the main script file with new hard-coded inputs, or commenting and re-assigning global input variables. Which analysis led to which output? Which is most recent? What exactly were the input files? 
+We use scripting languages to perform data analysis so that our research is reproducible. However, most analysis is actually an analysis pipeline. Often I am re-running an analysis with different parameters, or different input files, and this often leads to copying the main script file with new hard-coded inputs, or commenting and re-assigning global input variables (e.g. new paths for new data). Which analysis led to which output? Which is most recent? What exactly were the input files? 
 
 Here is a somewhat ugly method I have settled on to document code runs:
 
 1. Analysis is developed using `*_scratch` files.
-2. Once I have it worked out, the library functions go in a file under `patch_clamp` or `lfp` and I write a batch function that lives in `scripts/`.
-3. The batch file will take command line inputs. So a path list, and any parameters.
-4. Batch files will then be run with shell scripts. 
+1. Once I have the basic analysis worked out, I try to factor useful functions into a library (`patch_clamp` in this case).
+1. I will write a write a batch function (`main()`) that lives in `scripts/`.
+1. The batch file will take command line inputs. So a path list, and any parameters.
+1. Batch files will then be run with shell scripts. 
+1. Shell script changes are tracked with git.
 
-The idea is that batches can be re-run with different parameters using a shell script, which documents exactly what was done, what the outputs were, and allows it to be re-run.
+The goal of this workflow is to accomodate common code change and allow me to track different analysis runs. So batches can be re-run with different parameters using a shell script, which documents exactly what was done, what the outputs were, and allows it to be re-run.
 
 # Creating new shell scripts
 
-Scripts will be run from `ephys/`, and this becomes the working directory. Ensure you are in the `patch` virtualenv before you run a script. Write the shell script, then run `chmod +x <script-name>` to make executable. 
+Scripts will be run from the base of this repository. Ensure you are in the `patch` virtualenv (`pip install .` from this repository's root) before you run a script. Write the shell script, then run `chmod +x <script-name>` to make executable. 
 
 Scripts can then be run via `shell/<script-name.sh>`
 
-# spikes analysis
+# Spikes analysis key and notes
 
 - Database path is `/Users/nick/Dropbox/lab_notebook/projects_and_data/mnc/analysis_and_data/patch_clamp/data/summary_data/spiking_201912-202001/patch_data_batch.db`
 - `update_metadata_db.sh` adds the metadata to the database
@@ -35,3 +37,7 @@ Scripts can then be run via `shell/<script-name.sh>`
   - Most recent run was with git hash: **a323557**
 - `action_potential.sh` adds action potential features to the database
   - Most recent run was with git hash: **fdaeb4f**
+
+# Tests
+
+Tests can be run with `pytest .`.  
