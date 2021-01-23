@@ -1,9 +1,18 @@
 from setuptools import setup
 
+
+try:
+    with open("README.md", "r") as f:
+        readme = f.read()
+except Exception as e:
+    readme = "Couldn't find README. See: https://github.com/nkicg6/excitable-axonal-domains-physiology for README."
+
 setup(
     name="thesis_ephys",
     version="0.5-presubmission",
+    author="Nicholas George",
     description="Analysis routines for patch clamp and extracellular physiology.",
+    long_description=readme,
     install_requires=[
         "numpy==1.19.2",
         "pyabf==2.2.8",
