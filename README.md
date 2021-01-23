@@ -1,6 +1,10 @@
 # Code used for PhD project
 
-Analysis code for physiology section of my thesis project. Please note the code and instructions were developed on macOS with a bash shell, Python3.7-3.9, and sqlite3 version `3.24.0`.
+Initial submission date: TBD 
+
+BioRxiv link: TBD
+
+Analysis code for physiology section of my thesis project. Please note the code and instructions were developed on macOS Mojave (version `10.14.6`) with a GNU bash shell (version `3.2.57(1)`), Python (version `3.7-3.9`), and sqlite3 (version `3.24.0`).
 
 # Notes on staying organized
 
@@ -12,8 +16,8 @@ Here is a somewhat ugly method I have settled on to document code runs:
 
 1. Analysis is developed using `*_scratch` files.
 1. Once I have the basic analysis worked out, I try to factor useful functions into a library (`patch_clamp` in this case).
-1. I will write a write a batch function (`main()`) that lives in `scripts/`.
-1. The batch file will take command line inputs. So a path list, and any parameters.
+1. I will write a write a batch script (with a `main()`) that lives in `scripts/`.
+1. The batch script will take command line inputs (a path list and any parameters) and won't have many hard-coded variables.
 1. Batch files will then be run with shell scripts. 
 1. Shell script changes are tracked with git.
 
@@ -40,4 +44,4 @@ Scripts can then be run via `shell/<script-name.sh>`
 
 # Tests
 
-Tests can be run with `pytest .`.  
+Tests can be run with `pytest .` if the package is installed via `pip`.   
