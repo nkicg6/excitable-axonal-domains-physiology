@@ -1,4 +1,4 @@
-# Code used for PhD project
+# Code used for electrophysiology in my PhD project
 
 Initial submission date: TBD 
 
