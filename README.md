@@ -1,8 +1,8 @@
 # Code used for electrophysiology in my PhD project
 
-Initial submission date: TBD 
+Initial submission date: 2021-01-25 
 
-BioRxiv link: TBD
+bioRxiv link: https://www.biorxiv.org/content/10.1101/2021.01.25.428132v1
 
 See [excitable-axonal-domains-figures](https://github.com/nkicg6/excitable-axonal-domains-figures) for code used to generate figures and analyze data. 
 
