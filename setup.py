@@ -9,7 +9,7 @@ except Exception as e:
 
 setup(
     name="thesis_ephys",
-    version="0.5-presubmission",
+    version="0.6-submission",
     author="Nicholas George",
     description="Analysis routines for patch clamp and extracellular physiology.",
     long_description=readme,
