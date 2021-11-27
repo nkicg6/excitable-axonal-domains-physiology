@@ -2,7 +2,7 @@
 
 Initial submission date: 2021-01-25 
 
-Resubmission date: 2021-11-21
+Resubmission date (second journal): 2021-11-21
 
 bioRxiv link: https://www.biorxiv.org/content/10.1101/2021.01.25.428132v1
 
