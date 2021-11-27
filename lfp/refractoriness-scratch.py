@@ -125,8 +125,10 @@ new_exp = apply_artifat_template(experiment, 1)
 
 fig = plt.figure(figsize=(8, 8))
 ax1 = fig.add_subplot(111)
-# for i in new_exp.keys():
-#    ax1.plot(new_exp[i]['x'], new_exp[i]["no_artifact"], label=f"no artifact {i}", alpha=0.4)
+for i in new_exp.keys():
+    ax1.plot(
+        new_exp[i]["x"], new_exp[i]["no_artifact"], label=f"no artifact {i}", alpha=0.4
+    )
 sweep = 0
 # ax1.plot(
 #     new_exp[f"sweep_{sweep}"]["x"],
